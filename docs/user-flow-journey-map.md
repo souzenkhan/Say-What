@@ -104,7 +104,7 @@ Recover
 - App response: Shows Wi-Fi, Bluetooth, or manual entry guidance.
 - User feeling: Supported.
 
-7. Open Questions
+#7. Open Questions
 
 1. What exact information will be stored inside the venue QR code?
 2. Will the app connect to the venue's Wi-Fi, an audio stream, or both?
