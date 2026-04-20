@@ -13,7 +13,8 @@ import SwiftUI
 struct SayWhat: View {
     let image = Image("Girl")
     
-    @State private var showConnected = false
+    // @State private var showConnected = false
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         VStack {
@@ -61,8 +62,25 @@ struct SayWhat: View {
 
 //                    .position(x: 210, y: 5)
                 
+                if appState.isConnected == false {
+                    Text("Not Connected To Venue's Audio Stream")
+                    .font(.system(size:18))
+                    .bold()
+                    .padding()
+                    .background(Color.yellow)
+                    .position(x: 198, y:50)
+                }
 
-                if showConnected == false {
+                if appState.isConnected == true {
+                    Text("Connected To Venue's Audio Stream")
+                    .font(.system(size:18))
+                    .bold()
+                    .padding()
+                    .background(Color.yellow)
+                    .position(x: 195, y: 50)
+                }
+                
+                /* if showConnected == false {
                     Text("Not Connected To Venue's Audio Stream")
                         .font(.system(size:18))
                         .bold()
@@ -78,7 +96,7 @@ struct SayWhat: View {
                         .padding()
                         .background(Color.yellow)
                         .position(x: 195, y: 50)
-                }
+                }*/
             }
             
 // Setup, Help & About screen buttons
