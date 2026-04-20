@@ -19,6 +19,9 @@
 		18F7D93C24A4EB9E00DDAC34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18F7D93A24A4EB9E00DDAC34 /* LaunchScreen.storyboard */; };
 		18F7D95224A54AAF00DDAC34 /* About.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F7D95124A54AAF00DDAC34 /* About.swift */; };
 		4EEE3E182F8AD8CF00E97ED6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4EEE3E172F8AD8CF00E97ED6 /* Assets.xcassets */; };
+		9D224A372F9598F5009EBEC8 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D224A352F9598F5009EBEC8 /* AppState.swift */; };
+		9D224A382F9598F5009EBEC8 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D224A362F9598F5009EBEC8 /* AudioManager.swift */; };
+		9D224A3A2F959991009EBEC8 /* ListeningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D224A392F95998A009EBEC8 /* ListeningView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +50,9 @@
 		18F7D94224A4EB9E00DDAC34 /* LandmarksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LandmarksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		18F7D95124A54AAF00DDAC34 /* About.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = About.swift; sourceTree = "<group>"; };
 		4EEE3E172F8AD8CF00E97ED6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9D224A352F9598F5009EBEC8 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		9D224A362F9598F5009EBEC8 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		9D224A392F95998A009EBEC8 /* ListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +94,9 @@
 		18F7D92E24A4EB9B00DDAC34 /* Landmarks */ = {
 			isa = PBXGroup;
 			children = (
+				9D224A392F95998A009EBEC8 /* ListeningView.swift */,
+				9D224A352F9598F5009EBEC8 /* AppState.swift */,
+				9D224A362F9598F5009EBEC8 /* AudioManager.swift */,
 				4EEE3E172F8AD8CF00E97ED6 /* Assets.xcassets */,
 				1812DAE42A0AD1BE005EBCB5 /* QRScanner.swift */,
 				1812DAE52A0AD1BE005EBCB5 /* SayWhat.swift */,
@@ -223,11 +232,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D224A3A2F959991009EBEC8 /* ListeningView.swift in Sources */,
 				18F7D93024A4EB9B00DDAC34 /* AppDelegate.swift in Sources */,
 				1812DAE72A0AD1BE005EBCB5 /* SayWhat.swift in Sources */,
 				185196B1263B0F89009140BC /* Setup.swift in Sources */,
 				18F7D95224A54AAF00DDAC34 /* About.swift in Sources */,
 				18B5702D24AB888F00810D86 /* Help.swift in Sources */,
+				9D224A372F9598F5009EBEC8 /* AppState.swift in Sources */,
+				9D224A382F9598F5009EBEC8 /* AudioManager.swift in Sources */,
 				1812DAE62A0AD1BE005EBCB5 /* QRScanner.swift in Sources */,
 				18F7D93224A4EB9B00DDAC34 /* SceneDelegate.swift in Sources */,
 			);
@@ -393,7 +405,7 @@
 				DEVELOPMENT_TEAM = 4FW2763J7S;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Landmarks/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,7 +428,7 @@
 				DEVELOPMENT_TEAM = 4FW2763J7S;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Landmarks/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

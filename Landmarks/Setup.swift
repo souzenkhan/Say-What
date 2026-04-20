@@ -11,6 +11,10 @@
 import SwiftUI
 
 struct Setup: View {
+
+@EnvironmentObject var appState: AppState
+@EnvironmentObject var audioManager: AudioManager
+
   @State var networkID: String = ""
   @State var password: String = ""
   @State var security: String = ""
@@ -121,7 +125,7 @@ struct Setup: View {
 
 // Connect button
             
-            Group {
+            /*Group {
                 Spacer()
                 Spacer()
                 Spacer()
@@ -132,6 +136,57 @@ struct Setup: View {
                 Spacer()
                 Spacer()
 //                   .position(x: 190, y: 1)
+            }*/
+
+            // Connect button
+            
+            Group {
+                Spacer()
+                Spacer()
+                Spacer()
+
+                Button(action: {
+                    let testStream = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                    
+                    appState.streamURLString = testStream
+                    appState.isConnected = true
+                    appState.connectionStatus = "Connected To Venue's Audio Stream"
+                    
+                    audioManager.loadStream(from: testStream)
+                }) {
+                    Text("Connect")
+                        .bold()
+                        .font(.system(size:20))
+                        .foregroundColor(.black)
+                        .padding()
+                        .background(Color.yellow)
+                        .cornerRadius(8)
+                }
+
+                Spacer()
+                Spacer()
+                Spacer()
+            }
+
+             HStack(spacing: 20) {
+                Button("Play") {
+                    audioManager.play()
+                }
+
+                Button("Pause") {
+                    audioManager.pause()
+                }
+            }
+            .font(.system(size:18))
+            .padding()
+            
+            NavigationLink(destination: ListeningView()) {
+                Text("Go To Player")
+                    .bold()
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
             }
 
 // Copyright statement
