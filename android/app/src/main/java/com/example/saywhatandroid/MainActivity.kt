@@ -40,9 +40,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+<<<<<<< HEAD
 import android.media.AudioAttributes
 import android.media.AudioDeviceCallback
 import android.util.Log
+=======
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
 
 data class DeviceItem(
     val name: String,
@@ -52,10 +55,16 @@ data class DeviceItem(
 
 class MainActivity : ComponentActivity() {
 
+<<<<<<< HEAD
     private var bluetoothAdapter: BluetoothAdapter? = null
     private lateinit var audioManager: AudioManager
     private var mediaPlayer: MediaPlayer? = null
     private var audioDeviceCallback: AudioDeviceCallback? = null
+=======
+    private lateinit var bluetoothAdapter: BluetoothAdapter
+    private lateinit var audioManager: AudioManager
+    private var mediaPlayer: MediaPlayer? = null
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +86,7 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
+<<<<<<< HEAD
                 requestNeededPermissions { permissions ->
                     permissionLauncher.launch(permissions)
                 }
@@ -94,6 +104,17 @@ class MainActivity : ComponentActivity() {
                     audioDeviceCallback?.let {
                         audioManager.unregisterAudioDeviceCallback(it)
                     }
+=======
+                requestNeededPermissions { perms ->
+                    permissionLauncher.launch(perms)
+                }
+                devices = loadBluetoothDevices()
+                statusText = getAudioConnectionStatus()
+            }
+
+            DisposableEffect(Unit) {
+                onDispose {
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
                     releasePlayer()
                 }
             }
@@ -142,8 +163,12 @@ class MainActivity : ComponentActivity() {
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
+<<<<<<< HEAD
                                 logAudioDevices()
                                 playAudio("sample_audio")
+=======
+                                startPlayback()
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
                                 playbackStatus = "Playing"
                             }) {
                                 Text("Play")
@@ -193,6 +218,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+<<<<<<< HEAD
     private fun playAudio(source: String) {
         try {
             stopPlayback()
@@ -220,6 +246,20 @@ class MainActivity : ComponentActivity() {
                 stopPlayback()
             }
 
+=======
+    private fun startPlayback() {
+        try {
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
+                mediaPlayer?.setOnCompletionListener {
+                    stopPlayback()
+                }
+            }
+
+            if (mediaPlayer?.isPlaying == false) {
+                mediaPlayer?.start()
+            }
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -255,6 +295,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+<<<<<<< HEAD
     private fun setupAudioDeviceCallback(onStatusChange: (String) -> Unit) {
         audioDeviceCallback = object : AudioDeviceCallback() {
             override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
@@ -279,6 +320,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+=======
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
     private fun requestNeededPermissions(permissionLauncher: (Array<String>) -> Unit) {
         val permissions = mutableListOf<String>()
 
@@ -326,7 +369,12 @@ class MainActivity : ComponentActivity() {
             return emptyList()
         }
 
+<<<<<<< HEAD
         val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter?.bondedDevices ?: emptySet()
+=======
+        val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter.bondedDevices ?: emptySet()
+
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
         for (device in bondedDevices) {
             val name = device.name ?: "Unknown Device"
             result.add(
@@ -356,11 +404,18 @@ class MainActivity : ComponentActivity() {
 
     private fun isBluetoothAudioDevice(device: AudioDeviceInfo): Boolean {
         return device.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+<<<<<<< HEAD
                 device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
                         device.type == AudioDeviceInfo.TYPE_HEARING_AID) ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                         device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
+=======
+            device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+            device.type == AudioDeviceInfo.TYPE_HEARING_AID ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
+>>>>>>> 12c2e49 (Set up Android project, add local audio playback, and Bluetooth scanning UI)
     }
 
     private fun getAudioConnectionStatus(): String {
