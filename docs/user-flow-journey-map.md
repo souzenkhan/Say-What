@@ -1,11 +1,11 @@
 Say What? User Flow + Journey Map
 
-#1. Purpose
+##1. Purpose
 
 Say What? enhances the clarity of event audio for attendees using wired headphones, Bluetooth earbuds, or their own hearing aids.
 By manually entering the venue's network details or scanning a QR code, the software provides users with an easy way to connect to the audio system of the venue.
 
-#2. Primary User
+##2. Primary User
 A person attending an event who has trouble clearly hearing the venue audio is the main user.
 This user wishes to listen to the event audio directly through their own device and may utilize wired headphones, Bluetooth earbuds, or hearing aids.
 
