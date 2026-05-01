@@ -1,6 +1,6 @@
 # 📡 Audio Streaming Setup (Step-by-Step)
 
-## ⚠️ VERY IMPORTANT (READ FIRST)
+## Please read before running the project
 
 This project uses a **local IP address**.
 
@@ -9,7 +9,7 @@ This project uses a **local IP address**.
 
 ---
 
-# 🔁 STEP 1 — Find YOUR IP Address
+# STEP 1 — Find YOUR IP Address
 
 On your laptop (the one running the server):
 
@@ -29,11 +29,11 @@ inet 192.168.x.x
 192.168.12.163
 ```
 
-👉 This is YOUR IP
+This is YOUR IP
 
 ---
 
-# 🔁 STEP 2 — Update the App (REQUIRED)
+# STEP 2 — Update the App (REQUIRED)
 
 Go to:
 
@@ -51,7 +51,7 @@ Find this line:
 
 ---
 
-## 🔴 REPLACE WITH YOUR IP
+## REPLACE WITH YOUR IP
 
 Example:
 
@@ -72,7 +72,7 @@ Avni:
 
 ---
 
-# 🚀 STEP 3 — Run the Server
+# STEP 3 — Run the Server
 
 Go to server folder:
 
@@ -90,7 +90,7 @@ Server running on port 3000
 
 ---
 
-# 📱 STEP 4 — Run the App
+# STEP 4 — Run the App
 
 ```bash
 cd app
@@ -100,7 +100,7 @@ npx expo start
 
 ---
 
-## ⚠️ IMPORTANT: Use LAN Mode
+## IMPORTANT: Use LAN Mode
 
 In Expo:
 
@@ -120,13 +120,13 @@ Phone  → same WiFi
 
 NOT:
 
-- mobile data ❌
-- guest WiFi ❌
-- VPN ❌
+- mobile data
+- guest WiFi
+- VPN
 
 ---
 
-# 🧪 STEP 6 — Test Connection (BEFORE APP)
+# STEP 6 — Test Connection (BEFORE APP)
 
 On your phone browser, open:
 
@@ -140,11 +140,11 @@ Example:
 http://192.168.12.163:3000/audio
 ```
 
-👉 You should hear audio
+You should hear audio
 
 ---
 
-# 🎮 STEP 7 — Use the App
+# STEP 7 — Use the App
 
 1. Open app on phone
 2. Go to **Audio Control screen**
@@ -154,9 +154,9 @@ http://192.168.12.163:3000/audio
 
 ---
 
-# 🐛 TROUBLESHOOTING
+# TROUBLESHOOTING
 
-## ❌ No audio in app
+## No audio in app
 
 - Check IP is correct in code
 - Make sure server is running
@@ -164,13 +164,13 @@ http://192.168.12.163:3000/audio
 
 ---
 
-## ❌ Works on laptop but not phone
+## Works on laptop but not phone
 
 👉 IP is wrong OR Expo is in Tunnel mode
 
 ---
 
-## ❌ No sound on iPhone
+## No sound on iPhone
 
 - Turn OFF silent mode
 - Increase volume
@@ -178,7 +178,7 @@ http://192.168.12.163:3000/audio
 
 ---
 
-# 🧠 WHAT THIS MODULE DOES
+# WHAT THIS MODULE DOES
 
 ```text
 Server → sends audio file → over WiFi → app → plays audio
@@ -186,7 +186,7 @@ Server → sends audio file → over WiFi → app → plays audio
 
 ---
 
-# ⚠️ CURRENT LIMITATION
+# CURRENT LIMITATION
 
 - Uses audio file (not live mic yet)
 - ~200–500ms startup delay
@@ -194,7 +194,7 @@ Server → sends audio file → over WiFi → app → plays audio
 
 ---
 
-# 🔮 FUTURE WORK
+# FUTURE WORK
 
 - Live microphone streaming
 - WebRTC (low latency)
@@ -202,6 +202,6 @@ Server → sends audio file → over WiFi → app → plays audio
 
 ---
 
-# 👤 OWNER
+# OWNER
 
 Souzen — Networking & Streaming
