@@ -40,6 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import android.media.AudioAttributes
+import android.media.AudioDeviceCallback
+import android.util.Log
 
 data class DeviceItem(
     val name: String,
@@ -49,9 +52,10 @@ data class DeviceItem(
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var bluetoothAdapter: BluetoothAdapter
+    private var bluetoothAdapter: BluetoothAdapter? = null
     private lateinit var audioManager: AudioManager
     private var mediaPlayer: MediaPlayer? = null
+    private var audioDeviceCallback: AudioDeviceCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,15 +77,23 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                requestNeededPermissions { perms ->
-                    permissionLauncher.launch(perms)
+                requestNeededPermissions { permissions ->
+                    permissionLauncher.launch(permissions)
                 }
-                devices = loadBluetoothDevices()
+
                 statusText = getAudioConnectionStatus()
+                logAudioDevices()
             }
 
             DisposableEffect(Unit) {
+                setupAudioDeviceCallback { newStatus ->
+                    statusText = newStatus
+                }
+
                 onDispose {
+                    audioDeviceCallback?.let {
+                        audioManager.unregisterAudioDeviceCallback(it)
+                    }
                     releasePlayer()
                 }
             }
@@ -130,7 +142,8 @@ class MainActivity : ComponentActivity() {
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
-                                startPlayback()
+                                logAudioDevices()
+                                playAudio("sample_audio")
                                 playbackStatus = "Playing"
                             }) {
                                 Text("Play")
@@ -180,18 +193,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startPlayback() {
+    private fun playAudio(source: String) {
         try {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
-                mediaPlayer?.setOnCompletionListener {
-                    stopPlayback()
-                }
-            }
+            stopPlayback()
 
-            if (mediaPlayer?.isPlaying == false) {
+            if (source.startsWith("http://") || source.startsWith("https://")) {
+                mediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build()
+                    )
+                    setDataSource(source)
+                    setOnPreparedListener { player ->
+                        player.start()
+                    }
+                    prepareAsync()
+                }
+            } else {
+                mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
                 mediaPlayer?.start()
             }
+
+            mediaPlayer?.setOnCompletionListener {
+                stopPlayback()
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -224,6 +252,30 @@ class MainActivity : ComponentActivity() {
             mediaPlayer = null
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun setupAudioDeviceCallback(onStatusChange: (String) -> Unit) {
+        audioDeviceCallback = object : AudioDeviceCallback() {
+            override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
+                logAudioDevices()
+                onStatusChange(getAudioConnectionStatus())
+            }
+
+            override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
+                logAudioDevices()
+                onStatusChange(getAudioConnectionStatus())
+            }
+        }
+
+        audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
+    }
+
+    private fun logAudioDevices() {
+        Log.d("AUDIO", getAudioConnectionStatus())
+
+        audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).forEach {
+            Log.d("AUDIO_DEVICE", "type=${it.type}, name=${it.productName}")
         }
     }
 
@@ -274,8 +326,7 @@ class MainActivity : ComponentActivity() {
             return emptyList()
         }
 
-        val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter.bondedDevices ?: emptySet()
-
+        val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter?.bondedDevices ?: emptySet()
         for (device in bondedDevices) {
             val name = device.name ?: "Unknown Device"
             result.add(
@@ -305,10 +356,11 @@ class MainActivity : ComponentActivity() {
 
     private fun isBluetoothAudioDevice(device: AudioDeviceInfo): Boolean {
         return device.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-            device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
-            device.type == AudioDeviceInfo.TYPE_HEARING_AID ||
-            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
+                device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                        device.type == AudioDeviceInfo.TYPE_HEARING_AID) ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                        device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
     }
 
     private fun getAudioConnectionStatus(): String {
