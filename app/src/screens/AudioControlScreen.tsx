@@ -3,9 +3,31 @@ import ScreenContainer from "../components/ScreenContainer";
 import PrimaryButton from "../components/PrimaryButton";
 import { Audio } from "expo-av";
 import { useRef, useEffect } from "react";
+import { useConnection } from '../context/ConnectionContext';
+
+
 
 export default function AudioControlScreen() {
   const soundRef = useRef<Audio.Sound | null>(null);
+  const { connectionState, setConnectionState } = useConnection();
+
+  
+  const handleConnect = () => {
+    setConnectionState("connecting");
+  };
+
+  const handleDisconnect = () => {
+    setConnectionState("idle");
+  };
+
+  const handleGoLive = () => {
+    setConnectionState("live");
+  };
+
+  const handleError = () => {
+    setConnectionState("error");
+  };
+
 
   // 🔥 PLAY FUNCTION
   const handlePlay = async () => {
@@ -63,7 +85,12 @@ export default function AudioControlScreen() {
       <Text style={styles.title}>Audio Control</Text>
 
       <Text style={styles.info}>Volume: 100%</Text>
-      <Text style={styles.info}>Status: Connected</Text>
+      <Text style={styles.info}>Status: {connectionState}</Text>
+
+      <PrimaryButton title="Connect" onPress={handleConnect} />
+      <PrimaryButton title="Disconnect" onPress={handleDisconnect} />
+      <PrimaryButton title="Set Live" onPress={handleGoLive} />
+      <PrimaryButton title="Set Error" onPress={handleError} />
 
       <PrimaryButton title="Play" onPress={handlePlay} />
       <PrimaryButton title="Pause" onPress={handlePause} />
