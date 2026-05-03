@@ -13,8 +13,19 @@ export default function AudioControlScreen() {
 
   
   const handleConnect = () => {
-    setConnectionState("connecting");
-  };
+  setConnectionState("connecting");
+
+  setTimeout(() => {
+    const didFail = Math.random() < 0.3;
+
+    if (didFail) {
+      setConnectionState("error");
+    } else {
+      setConnectionState("live");
+    }
+  }, 1500);
+};
+
 
   const handleDisconnect = () => {
     setConnectionState("idle");
