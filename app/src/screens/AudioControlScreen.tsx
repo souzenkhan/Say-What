@@ -13,8 +13,19 @@ export default function AudioControlScreen() {
 
   
   const handleConnect = () => {
-    setConnectionState("connecting");
-  };
+  setConnectionState("connecting");
+
+  setTimeout(() => {
+    const didFail = Math.random() < 0.3;
+
+    if (didFail) {
+      setConnectionState("error");
+    } else {
+      setConnectionState("live");
+    }
+  }, 1500);
+};
+
 
   const handleDisconnect = () => {
     setConnectionState("idle");
@@ -89,8 +100,8 @@ export default function AudioControlScreen() {
 
       <PrimaryButton title="Connect" onPress={handleConnect} />
       <PrimaryButton title="Disconnect" onPress={handleDisconnect} />
-      <PrimaryButton title="Set Live" onPress={handleGoLive} />
-      <PrimaryButton title="Set Error" onPress={handleError} />
+      {/* <PrimaryButton title="Set Live" onPress={handleGoLive} />
+      <PrimaryButton title="Set Error" onPress={handleError} /> */}
 
       <PrimaryButton title="Play" onPress={handlePlay} />
       <PrimaryButton title="Pause" onPress={handlePause} />
