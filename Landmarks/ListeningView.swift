@@ -25,6 +25,8 @@ struct ListeningView: View {
                 .font(.headline)
             Text("Output Device: \(audioManager.currentOutput)")
                 .font(.headline)
+            Text("Playback Status: \(audioManager.playbackStatus)")
+                .font(.headline)
 
             // Play / Pause button
 
