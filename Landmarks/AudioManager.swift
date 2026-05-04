@@ -8,6 +8,7 @@ final class AudioManager: ObservableObject {
     @Published var volume: Float = 1.0
     @Published var errorMessage: String = ""
     @Published var currentOutput: String = "Unknown"
+    @Published var playbackStatus: String = "Not Playing"
     
     private var player: AVPlayer?
 
@@ -27,10 +28,19 @@ final class AudioManager: ObservableObject {
     func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default, options: [.allowBluetooth, .allowAirPlay])
+
+            try session.setCategory(
+                .playback,
+                mode: .default,
+                options: [.allowBluetooth, .allowBluetoothA2DP, .allowAirPlay]
+            )
+
             try session.setActive(true)
+            updateCurrentRoute()
+
         } catch {
             errorMessage = "Failed to configure audio session: \(error.localizedDescription)"
+            playbackStatus = "Audio Session Error"
             print(errorMessage)
         }
     }
@@ -48,23 +58,27 @@ final class AudioManager: ObservableObject {
     func play() {
         guard let player = player else {
             errorMessage = "No audio stream loaded"
+            playbackStatus = "No Stream Loaded"
             return
         }
 
         player.play()
         isPlaying = true
+        playbackStatus = "Playing"
         updateCurrentRoute()
     }
 
     func pause() {
         player?.pause()
         isPlaying = false
+        playbackStatus = "Paused"
     }
 
     func stop() {
         player?.pause()
         player?.seek(to: .zero)
         isPlaying = false
+        playbackStatus = "Stopped"
     }
 
     func setVolume(_ newVolume: Float) {

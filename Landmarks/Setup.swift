@@ -19,6 +19,7 @@ struct Setup: View {
   @State var password: String = ""
   @State var security: String = ""
   @State var scanResult = "No QR code detected"
+  @State var streamURL: String = ""
     
     let image = Image("QR")
 
@@ -123,6 +124,20 @@ struct Setup: View {
 //                    .position(x: 40, y: 1)
             }
 
+            Group {
+                Text("Stream URL")
+                    .bold()
+
+                TextField("Enter live audio stream URL", text: $streamURL)
+                    .border(Color.black)
+                    .frame(width: 300, alignment: .topLeading)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+
+                Spacer()
+                Spacer()
+            }
+
 // Connect button
             
             /*Group {
@@ -146,21 +161,25 @@ struct Setup: View {
                 Spacer()
 
                 Button(action: {
-                    let testStream = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                    
-                    appState.streamURLString = testStream
+
+                    let selectedStream = streamURL.isEmpty
+                        ? "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                        : streamURL
+
+                    appState.streamURLString = selectedStream
                     appState.isConnected = true
                     appState.connectionStatus = "Connected To Venue's Audio Stream"
-                    
-                    audioManager.loadStream(from: testStream)
+
+                    audioManager.loadStream(from: selectedStream)
+
                 }) {
                     Text("Connect")
-                        .bold()
-                        .font(.system(size:20))
-                        .foregroundColor(.black)
-                        .padding()
-                        .background(Color.yellow)
-                        .cornerRadius(8)
+                    .bold()
+                    .font(.system(size:20))
+                    .foregroundColor(.black)
+                    .padding()
+                    .background(Color.yellow)
+                    .cornerRadius(8)
                 }
 
                 Spacer()
