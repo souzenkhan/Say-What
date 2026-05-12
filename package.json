@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "mic": "^2.1.2"
+    "mic": "^2.1.2",
+    "prism-media": "^1.3.5"
   }
 }

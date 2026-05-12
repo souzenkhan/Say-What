@@ -4,36 +4,72 @@
 
 This project uses a **local IP address**.
 
-- Every person running the server will have a **different IP**
-- You MUST replace it in the app code
+- Every person running the server will have a different IP
+- You MUST replace the IP in the app code
 
 ---
 
-# STEP 1 — Find YOUR IP Address
+# STEP 1 — Install Dependencies
 
-On your laptop (the one running the server):
+## Install Node packages
+
+Server:
+
+```bash
+cd server
+npm install
+```
+
+App:
+
+```bash
+cd app
+npm install
+```
+
+---
+
+# STEP 2 — Install FFmpeg (REQUIRED FOR LIVE AUDIO)
+
+Mac:
+
+```bash
+brew install ffmpeg
+```
+
+Verify installation:
+
+```bash
+ffmpeg -version
+```
+
+---
+
+# STEP 3 — Find YOUR IP Address
+
+On your laptop:
 
 ```bash
 ifconfig
 ```
 
-Look for something like:
+Look for:
 
 ```text
 inet 192.168.x.x
 ```
 
-### Example:
+Example:
 
 ```text
 192.168.12.163
 ```
 
-This is YOUR IP
+This is YOUR IP address.
 
 ---
 
-# STEP 2 — Update the App (REQUIRED)
+# STEP 4 — Update the App (REQUIRED)
 
 Go to:
 
@@ -41,164 +77,198 @@ Go to:
 /app/screens/AudioControlScreen.tsx
 ```
 
-Find this line:
+Find:
 
 ```ts
-{
-  uri: "http://192.168.12.163:3000/audio";
-}
+uri: "http://192.168.12.163:3000/audio";
 ```
 
----
-
-## REPLACE WITH YOUR IP
-
-Example:
+Replace with YOUR IP:
 
 ```ts
-{
-  uri: "http://192.168.1.45:3000/audio";
-}
+uri: "http://192.168.x.x:3000/audio";
 ```
 
--> If you don’t do this, audio WILL NOT WORK
-Please keep a log of IP addresses so you don't have to manually change every time you pull code locally
+For live audio:
 
+```ts
+uri: "http://192.168.x.x:3000/audio-live";
+```
+
+If the IP is incorrect, audio will not work.
+
+Please keep a log of local IPs:
+
+```text
 Souzen: http://192.168.12.163:3000
 Fatima:
 Maryam:
 Ngozi:
 Avni:
+```
 
 ---
 
-# STEP 3 — Run the Server
+# STEP 5 — Configure Microphone Device (LIVE AUDIO)
 
-Go to server folder:
+Run:
 
 ```bash
-cd server
-npm install
-node server.js
+ffmpeg -f avfoundation -list_devices true -i ""
 ```
 
-You should see:
+Look under:
 
 ```text
-Server running on port 3000
-```
-
----
-
-# STEP 4 — Run the App
-
-```bash
-cd app
-npm install
-npx expo start
-```
-
----
-
-## IMPORTANT: Use LAN Mode
-
-In Expo:
-
-- Press `shift + l` OR
-- Select **LAN** (NOT Tunnel)
-
----
-
-# 📶 STEP 5 — Same WiFi
-
-Make sure:
-
-```text
-Laptop → same WiFi
-Phone  → same WiFi
-```
-
-NOT:
-
-- mobile data
-- guest WiFi
-- VPN
-
----
-
-# STEP 6 — Test Connection (BEFORE APP)
-
-On your phone browser, open:
-
-```text
-http://YOUR_IP:3000/audio
+AVFoundation audio devices:
 ```
 
 Example:
 
 ```text
-http://192.168.12.163:3000/audio
+[1] MacBook Pro Microphone
 ```
 
-You should hear audio
+In `server.js`, update:
+
+```js
+"-i", ":1",
+```
+
+Replace `1` with your microphone index if different.
 
 ---
 
-# STEP 7 — Use the App
+# STEP 6 — Start the Server
+
+```bash
+cd server
+node server.js
+```
+
+Expected output:
+
+```text
+🎤 FFmpeg live MP3 stream started
+✅ Server running on port 3000
+```
+
+---
+
+# STEP 7 — Run the App
+
+```bash
+cd app
+npx expo start
+```
+
+Use LAN mode:
+
+- press `shift + l`
+- OR select LAN manually
+
+Do NOT use Tunnel mode.
+
+---
+
+# STEP 8 — Same WiFi Network
+
+Laptop and phone must both be on:
+
+- same WiFi
+- not mobile data
+- not guest WiFi
+- not VPN
+
+---
+
+# STEP 9 — Test in Browser BEFORE App
+
+## Stable file playback
+
+Open on phone:
+
+```text
+http://YOUR_IP:3000/audio
+```
+
+## Live microphone stream
+
+Open on phone:
+
+```text
+http://YOUR_IP:3000/audio-live
+```
+
+Example:
+
+```text
+http://192.168.12.163:3000/audio-live
+```
+
+---
+
+# STEP 10 — Use the App
 
 1. Open app on phone
-2. Go to **Audio Control screen**
-3. Press **Play**
-4. Audio should play
-5. Press **Pause** to stop
+2. Navigate to Audio Control screen
+3. Press Play
+4. Audio should begin streaming
 
 ---
 
 # TROUBLESHOOTING
 
-## No audio in app
+## No audio
 
-- Check IP is correct in code
-- Make sure server is running
-- Make sure same WiFi
+- Check IP address
+- Verify server is running
+- Ensure same WiFi
 
----
+## Live audio has no sound
+
+- Check microphone permissions:
+  - System Settings → Privacy & Security → Microphone
+
+- Verify correct FFmpeg mic index in `server.js`
+
+## iPhone buffering or overlapping audio
+
+- Close all previous `/audio-live` tabs
+- Reopen only one stream
+- Restart Safari if needed
 
 ## Works on laptop but not phone
 
-👉 IP is wrong OR Expo is in Tunnel mode
+- Wrong IP
+- Expo running in Tunnel mode
+- Firewall blocking port 3000
 
 ---
 
-## No sound on iPhone
-
-- Turn OFF silent mode
-- Increase volume
-- Restart Expo
-
----
-
-# WHAT THIS MODULE DOES
+# CURRENT SYSTEM
 
 ```text
-Server → sends audio file → over WiFi → app → plays audio
+/audio       → stable MP3 file playback
+/audio-live  → live microphone MP3 stream
 ```
 
 ---
 
-# CURRENT LIMITATION
+# CURRENT LIMITATIONS
 
-- Uses audio file (not live mic yet)
-- ~200–500ms startup delay
-- No real-time streaming yet
+- Live stream may still have slight delay
+- Safari/iPhone buffering behavior can vary
+- WebRTC would be needed for true low-latency production streaming
 
 ---
 
 # FUTURE WORK
 
-- Live microphone streaming
-- WebRTC (low latency)
-- Bluetooth routing to hearing aids
+- WebRTC real-time streaming
+- Bluetooth hearing aid routing
+- Lower latency audio pipeline
+- Audio compression optimization
 
 ---
 
