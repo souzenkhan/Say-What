@@ -17,13 +17,17 @@ export default function PrimaryButton({ title, onPress }: Props) {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.primary,
-    padding: 15,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
     borderRadius: 10,
     marginBottom: 15,
+    minHeight: 56,
+    justifyContent: 'center',
   },
   buttonText: {
     color: colors.white,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
