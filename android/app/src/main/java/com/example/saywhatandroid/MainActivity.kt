@@ -53,12 +53,9 @@ data class DeviceItem(
 
 class MainActivity : ComponentActivity() {
 
-    private var bluetoothAdapter: BluetoothAdapter? = null
+    private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var audioManager: AudioManager
     private var mediaPlayer: MediaPlayer? = null
-    private var audioDeviceCallback: AudioDeviceCallback? = null
-    private val STREAM_URL = "http://10.14.143.36:3000/audio"
-    private var wasPlayingBeforeDeviceChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,23 +77,15 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                requestNeededPermissions { permissions ->
-                    permissionLauncher.launch(permissions)
+                requestNeededPermissions { perms ->
+                    permissionLauncher.launch(perms)
                 }
-
+                devices = loadBluetoothDevices()
                 statusText = getAudioConnectionStatus()
-                logAudioDevices()
             }
 
             DisposableEffect(Unit) {
-                setupAudioDeviceCallback { newStatus ->
-                    statusText = newStatus
-                }
-
                 onDispose {
-                    audioDeviceCallback?.let {
-                        audioManager.unregisterAudioDeviceCallback(it)
-                    }
                     releasePlayer()
                 }
             }
@@ -115,36 +104,25 @@ class MainActivity : ComponentActivity() {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(onClick = {
-                                    devices = loadBluetoothDevices()
-                                    statusText = getAudioConnectionStatus()
-                                }) {
-                                    Text("Refresh")
-                                }
-
-                                Button(onClick = {
-                                    startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                                }) {
-                                    Text("Bluetooth Settings")
-                                }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(onClick = {
+                                devices = loadBluetoothDevices()
+                                statusText = getAudioConnectionStatus()
+                            }) {
+                                Text("Refresh")
                             }
 
                             Button(onClick = {
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                    data = Uri.parse("package:$packageName")
-                                }
-                                startActivity(intent)
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                             }) {
-                                Text("App Settings")
+                                Text("Open Bluetooth Settings")
                             }
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Text(
-                            text = "Live Stream Playback",
+                            text = "Local Audio Playback",
                             style = MaterialTheme.typography.headlineSmall
                         )
 
@@ -156,9 +134,7 @@ class MainActivity : ComponentActivity() {
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
-                                logAudioDevices()
-                                playAudio(STREAM_URL)
-                                wasPlayingBeforeDeviceChange = true
+                                startPlayback()
                                 playbackStatus = "Playing"
                             }) {
                                 Text("Play")
@@ -166,7 +142,6 @@ class MainActivity : ComponentActivity() {
 
                             Button(onClick = {
                                 pausePlayback()
-                                wasPlayingBeforeDeviceChange = false
                                 playbackStatus = "Paused"
                             }) {
                                 Text("Pause")
@@ -174,7 +149,6 @@ class MainActivity : ComponentActivity() {
 
                             Button(onClick = {
                                 stopPlayback()
-                                wasPlayingBeforeDeviceChange = false
                                 playbackStatus = "Stopped"
                             }) {
                                 Text("Stop")
@@ -210,48 +184,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun playAudio(source: String) {
+    private fun startPlayback() {
         try {
-            if (mediaPlayer != null) {
-                mediaPlayer?.start()
-                return
-            }
-
-            if (source.startsWith("http://") || source.startsWith("https://")) {
-                mediaPlayer = MediaPlayer().apply {
-                    setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build()
-                    )
-
-                    setDataSource(source)
-
-                    setOnPreparedListener { player ->
-                        player.start()
-                    }
-
-                    setOnErrorListener { _, what, extra ->
-                        Log.e("AUDIO", "Playback error: what=$what extra=$extra")
-                        releasePlayer()
-                        true
-                    }
-
-                    prepareAsync()
-                }
-            } else {
+            if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
+                mediaPlayer?.setOnCompletionListener {
+                    stopPlayback()
+                }
+            }
+
+            if (mediaPlayer?.isPlaying == false) {
                 mediaPlayer?.start()
             }
-
-            mediaPlayer?.setOnCompletionListener {
-                stopPlayback()
-            }
-
         } catch (e: Exception) {
             e.printStackTrace()
-            releasePlayer()
         }
     }
 
@@ -282,45 +228,6 @@ class MainActivity : ComponentActivity() {
             mediaPlayer = null
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    private fun setupAudioDeviceCallback(onStatusChange: (String) -> Unit) {
-        audioDeviceCallback = object : AudioDeviceCallback() {
-            override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
-                logAudioDevices()
-                onStatusChange(getAudioConnectionStatus())
-            }
-
-            override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
-                logAudioDevices()
-                onStatusChange(getAudioConnectionStatus())
-
-                val removedBluetoothDevice = removedDevices.any { isBluetoothAudioDevice(it) }
-
-                if (removedBluetoothDevice && wasPlayingBeforeDeviceChange) {
-                    try {
-                        mediaPlayer?.let { player ->
-                            if (!player.isPlaying) {
-                                player.start()
-                            }
-                        }
-                    } catch (e: Exception) {
-                        Log.e("AUDIO", "Restarting playback after Bluetooth disconnect", e)
-                        releasePlayer()
-                        playAudio(STREAM_URL)
-                    }
-                }
-            }
-        }
-
-        audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
-    }
-    private fun logAudioDevices() {
-        Log.d("AUDIO", getAudioConnectionStatus())
-
-        audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).forEach {
-            Log.d("AUDIO_DEVICE", "type=${it.type}, name=${it.productName}")
         }
     }
 
@@ -371,7 +278,8 @@ class MainActivity : ComponentActivity() {
             return emptyList()
         }
 
-        val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter?.bondedDevices ?: emptySet()
+        val bondedDevices: Set<BluetoothDevice> = bluetoothAdapter.bondedDevices ?: emptySet()
+
         for (device in bondedDevices) {
             val name = device.name ?: "Unknown Device"
             result.add(
@@ -401,11 +309,10 @@ class MainActivity : ComponentActivity() {
 
     private fun isBluetoothAudioDevice(device: AudioDeviceInfo): Boolean {
         return device.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                        device.type == AudioDeviceInfo.TYPE_HEARING_AID) ||
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                        device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
+            device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+            device.type == AudioDeviceInfo.TYPE_HEARING_AID ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                device.type == AudioDeviceInfo.TYPE_BLE_HEADSET)
     }
 
     private fun getAudioConnectionStatus(): String {
