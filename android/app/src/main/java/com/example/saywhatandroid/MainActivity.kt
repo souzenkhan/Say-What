@@ -316,7 +316,6 @@ class MainActivity : ComponentActivity() {
 
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
     }
-
     private fun logAudioDevices() {
         Log.d("AUDIO", getAudioConnectionStatus())
 
