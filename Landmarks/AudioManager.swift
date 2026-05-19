@@ -2,17 +2,19 @@ import Foundation
 import AVFoundation
 import Combine
 
-final class AudioManager: ObservableObject {
+final class AudioManager: NSObject, ObservableObject {
     @Published var isPlaying: Bool = false
     @Published var isBuffering: Bool = false
     @Published var volume: Float = 1.0
     @Published var errorMessage: String = ""
     @Published var currentOutput: String = "Unknown"
     @Published var playbackStatus: String = "Not Playing"
-    
+
     private var player: AVPlayer?
 
-    init() {
+    override init() {
+        super.init()
+
         configureAudioSession()
 
         NotificationCenter.default.addObserver(
@@ -32,7 +34,7 @@ final class AudioManager: ObservableObject {
             try session.setCategory(
                 .playback,
                 mode: .default,
-                options: [.allowBluetooth, .allowBluetoothA2DP, .allowAirPlay]
+                options: [.allowBluetoothA2DP, .allowAirPlay]
             )
 
             try session.setActive(true)
@@ -48,11 +50,43 @@ final class AudioManager: ObservableObject {
     func loadStream(from urlString: String) {
         guard let url = URL(string: urlString) else {
             errorMessage = "Invalid stream URL"
+            playbackStatus = "Invalid Stream URL"
             return
         }
 
-        player = AVPlayer(url: url)
+        configureAudioSession()
+
+        let playerItem = AVPlayerItem(url: url)
+
+        playerItem.addObserver(
+            self,
+            forKeyPath: "playbackBufferEmpty",
+            options: .new,
+            context: nil
+        )
+
+        playerItem.addObserver(
+            self,
+            forKeyPath: "playbackLikelyToKeepUp",
+            options: .new,
+            context: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerItemDidReachEnd),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: playerItem
+        )
+
+        player = AVPlayer(playerItem: playerItem)
+        player?.automaticallyWaitsToMinimizeStalling = true
         player?.volume = volume
+
+        isPlaying = false
+        isBuffering = false
+        playbackStatus = "Stream Loaded"
+        errorMessage = ""
     }
 
     func play() {
@@ -85,7 +119,36 @@ final class AudioManager: ObservableObject {
         volume = newVolume
         player?.volume = newVolume
     }
-    
+
+    @objc func playerItemDidReachEnd(notification: Notification) {
+        playbackStatus = "Playback Finished"
+        isPlaying = false
+    }
+
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey : Any]?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        if keyPath == "playbackBufferEmpty" {
+            DispatchQueue.main.async {
+                self.isBuffering = true
+                self.playbackStatus = "Buffering..."
+            }
+        }
+
+        if keyPath == "playbackLikelyToKeepUp" {
+            DispatchQueue.main.async {
+                self.isBuffering = false
+
+                if self.isPlaying {
+                    self.playbackStatus = "Playing"
+                }
+            }
+        }
+    }
+
     @objc func handleRouteChange(notification: Notification) {
         updateCurrentRoute()
     }
