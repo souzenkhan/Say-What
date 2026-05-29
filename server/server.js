@@ -7,10 +7,16 @@ const { spawn } = require("child_process");
 
 const app = express();
 
+// =========================
+// TEST ROUTE
+// =========================
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
 
+// =========================
+// FILE STREAM (stable fallback)
+// =========================
 app.get("/audio", (req, res) => {
   const filePath = path.join(__dirname, "sample.mp3");
 
@@ -23,15 +29,21 @@ app.get("/audio", (req, res) => {
   res.sendFile(filePath);
 });
 
+// =========================
+// LIVE MP3 STREAM
+// =========================
+
 let clients = [];
 
+// Live stream route
 app.get("/audio-live", (req, res) => {
   console.log("🎧 Client connected:", req.ip);
 
   res.writeHead(200, {
     "Content-Type": "audio/mpeg",
-    "Transfer-Encoding": "chunked",
-    "Cache-Control": "no-cache",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    Pragma: "no-cache",
+    Expires: "0",
     Connection: "keep-alive",
   });
 
@@ -54,44 +66,65 @@ app.get("/audio-live", (req, res) => {
   });
 });
 
-function startFFmpegLiveStream() {
-  const ffmpeg = spawn("ffmpeg", [
-    "-re",
-    "-stream_loop",
-    "-1",
-    "-i",
-    path.join(__dirname, "sample.mp3"),
-    "-f",
-    "mp3",
-    "-",
-  ]);
+// =========================
+// FFmpeg microphone capture
+// =========================
 
-  ffmpeg.stdout.on("data", (chunk) => {
-    clients.forEach((client) => {
-      try {
-        client.write(chunk);
-      } catch (err) {
-        console.log("Client write error");
-      }
-    });
+const ffmpeg = spawn("ffmpeg", [
+  "-f",
+  "avfoundation",
+
+  "-i",
+  "none:1",
+
+  "-ac",
+  "1",
+
+  "-ar",
+  "8000",
+
+  "-b:a",
+  "32k",
+
+  "-fflags",
+  "nobuffer",
+
+  "-flags",
+  "low_delay",
+
+  "-flush_packets",
+  "1",
+
+  "-f",
+  "mp3",
+
+  "-"
+]);
+
+ffmpeg.stdout.on("data", (chunk) => {
+  clients.forEach((client) => {
+    try {
+      client.write(chunk);
+    } catch (err) {
+      console.log("Client write error");
+    }
   });
+});
 
-  ffmpeg.stderr.on("data", () => {});
+ffmpeg.stderr.on("data", (data) => {
+  // Optional debug:
+  // console.log(data.toString());
+});
 
-  ffmpeg.on("error", (err) => {
-    console.log("⚠️ FFmpeg could not start:", err.message);
-    console.log("Server will still run with the /audio fallback endpoint.");
-  });
+ffmpeg.on("close", () => {
+  console.log("FFmpeg process closed");
+});
 
-  ffmpeg.on("close", () => {
-    console.log("FFmpeg process closed");
-  });
+console.log("🎤 FFmpeg live MP3 stream started");
 
-  console.log("🎤 FFmpeg live MP3 stream attempted");
-}
-
-startFFmpegLiveStream();
-
+// =========================
+// START SERVER
+// =========================
 app.listen(3000, "0.0.0.0", () => {
   console.log("✅ Server running on port 3000");
 });
