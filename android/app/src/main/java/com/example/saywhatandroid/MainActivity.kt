@@ -44,10 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import android.media.AudioAttributes
-import android.media.AudioDeviceCallback
-import android.util.Log
-import android.net.Uri
+
 
 data class DeviceItem(
     val name: String,
@@ -61,7 +58,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var audioManager: AudioManager
     private var mediaPlayer: MediaPlayer? = null
     private var audioDeviceCallback: AudioDeviceCallback? = null
-    private val STREAM_URL = "http://10.14.143.36:3000/audio"
+    private val STREAM_URL = "http://10.14.143.38:3000/audio-live"
     private var wasPlayingBeforeDeviceChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -216,9 +213,11 @@ class MainActivity : ComponentActivity() {
 
     private fun playAudio(source: String) {
         try {
+            Log.d("AUDIO", "playAudio called with source: $source")
+
             if (mediaPlayer != null) {
-                mediaPlayer?.start()
-                return
+                Log.d("AUDIO", "Existing MediaPlayer found, releasing before starting new stream")
+                releasePlayer()
             }
 
             if (source.startsWith("http://") || source.startsWith("https://")) {
@@ -230,10 +229,19 @@ class MainActivity : ComponentActivity() {
                             .build()
                     )
 
+                    // Max software volume for MediaPlayer
+                    setVolume(1.0f, 1.0f)
+
+                    Log.d("AUDIO", "Setting data source")
                     setDataSource(source)
 
                     setOnPreparedListener { player ->
+                        Log.d("AUDIO", "MediaPlayer prepared, starting playback")
                         player.start()
+                    }
+
+                    setOnBufferingUpdateListener { _, percent ->
+                        Log.d("AUDIO", "Buffering: $percent%")
                     }
 
                     setOnErrorListener { _, what, extra ->
@@ -242,19 +250,23 @@ class MainActivity : ComponentActivity() {
                         true
                     }
 
+                    Log.d("AUDIO", "Calling prepareAsync")
                     prepareAsync()
                 }
             } else {
+                Log.d("AUDIO", "Playing local sample audio")
                 mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
+                mediaPlayer?.setVolume(1.0f, 1.0f)
                 mediaPlayer?.start()
             }
 
             mediaPlayer?.setOnCompletionListener {
+                Log.d("AUDIO", "Playback completed")
                 stopPlayback()
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("AUDIO", "Exception in playAudio", e)
             releasePlayer()
         }
     }
