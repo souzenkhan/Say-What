@@ -318,6 +318,10 @@ class MainActivity : ComponentActivity() {
                         Log.d("AUDIO", "Buffering: $percent%")
                     }
 
+                    setOnBufferingUpdateListener { _, percent ->
+                        Log.d("AUDIO", "Buffering: $percent%")
+                    }
+
                     setOnErrorListener { _, what, extra ->
                         Log.e("AUDIO", "Playback error: what=$what extra=$extra")
                         releasePlayer()

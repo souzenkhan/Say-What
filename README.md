@@ -102,7 +102,7 @@ Please keep a log of local IPs:
 ```text
 Souzen: http://192.168.12.163:3000
 Fatima:
-Maryam:
+Maryam: http://192.168.1.107:3000
 Ngozi:
 Avni:
 ```
