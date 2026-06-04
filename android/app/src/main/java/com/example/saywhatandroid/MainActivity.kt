@@ -52,6 +52,16 @@ data class DeviceItem(
     val isConnected: Boolean
 )
 
+enum class AppScreen {
+    HOME,
+    QR_SCAN,
+    SETUP,
+    AUDIO,
+    HELP,
+    ABOUT,
+    CONNECTION_ERROR
+}
+
 class MainActivity : ComponentActivity() {
 
     private var bluetoothAdapter: BluetoothAdapter? = null
@@ -60,6 +70,7 @@ class MainActivity : ComponentActivity() {
     private var audioDeviceCallback: AudioDeviceCallback? = null
     private val STREAM_URL = "http://10.14.143.38:3000/audio-live"
     private var wasPlayingBeforeDeviceChange = false
+    private var updatePlaybackStatus: ((String) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +83,11 @@ class MainActivity : ComponentActivity() {
             var devices by remember { mutableStateOf(emptyList<DeviceItem>()) }
             var statusText by remember { mutableStateOf("Not checked yet") }
             var playbackStatus by remember { mutableStateOf("Stopped") }
-
+            updatePlaybackStatus = { newStatus ->
+                playbackStatus = newStatus
+            }
+            var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
+            var bluetoothDeviceName by remember { mutableStateOf("No Bluetooth device connected") }
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) {
@@ -86,12 +101,14 @@ class MainActivity : ComponentActivity() {
                 }
 
                 statusText = getAudioConnectionStatus()
+                bluetoothDeviceName = getConnectedBluetoothDeviceName()
                 logAudioDevices()
             }
 
             DisposableEffect(Unit) {
                 setupAudioDeviceCallback { newStatus ->
                     statusText = newStatus
+                    bluetoothDeviceName = getConnectedBluetoothDeviceName()
                 }
 
                 onDispose {
@@ -103,116 +120,172 @@ class MainActivity : ComponentActivity() {
             }
 
             MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Bluetooth Audio Devices",
-                            style = MaterialTheme.typography.headlineSmall
+                when (currentScreen) {
+                    AppScreen.HOME -> {
+                        SayWhatHomeScreen(
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onBluetoothSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                            },
+                            onAboutClick = {
+                                currentScreen = AppScreen.ABOUT
+                            }
                         )
+                    }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Text("Connection status: $statusText")
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(onClick = {
-                                    devices = loadBluetoothDevices()
-                                    statusText = getAudioConnectionStatus()
-                                }) {
-                                    Text("Refresh")
-                                }
-
-                                Button(onClick = {
-                                    startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                                }) {
-                                    Text("Bluetooth Settings")
-                                }
+                    AppScreen.QR_SCAN -> {
+                        QRScanScreen(
+                            onUseScanClick = {
+                                currentScreen = AppScreen.SETUP
+                            },
+                            onBackClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                             }
-
-                            Button(onClick = {
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                    data = Uri.parse("package:$packageName")
-                                }
-                                startActivity(intent)
-                            }) {
-                                Text("App Settings")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Text(
-                            text = "Live Stream Playback",
-                            style = MaterialTheme.typography.headlineSmall
                         )
+                    }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Text("Playback status: $playbackStatus")
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {
-                                logAudioDevices()
-                                playAudio(STREAM_URL)
-                                wasPlayingBeforeDeviceChange = true
-                                playbackStatus = "Playing"
-                            }) {
-                                Text("Play")
+                    AppScreen.SETUP -> {
+                        SetupScreen(
+                            onScanVenueClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                             }
+                        )
+                    }
 
-                            Button(onClick = {
-                                pausePlayback()
-                                wasPlayingBeforeDeviceChange = false
-                                playbackStatus = "Paused"
-                            }) {
-                                Text("Pause")
-                            }
-
-                            Button(onClick = {
-                                stopPlayback()
-                                wasPlayingBeforeDeviceChange = false
-                                playbackStatus = "Stopped"
-                            }) {
-                                Text("Stop")
-                            }
+                    AppScreen.AUDIO -> {
+                        LaunchedEffect(Unit) {
+                            playAudio(STREAM_URL)
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        if (devices.isEmpty()) {
-                            Text("No paired Bluetooth devices found.")
-                        } else {
-                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(devices) { device ->
-                                    Card(modifier = Modifier.fillMaxWidth()) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Text(device.name)
-                                            Text(device.address)
-                                            Text(
-                                                if (device.isConnected) {
-                                                    "Connected"
-                                                } else {
-                                                    "Not connected"
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
+                        AudioScreen(
+                            bluetoothDeviceName = bluetoothDeviceName,
+                            bluetoothStatus = statusText,
+                            playbackStatus = playbackStatus,
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                             }
-                        }
+                        )
+                    }
+
+                    AppScreen.HELP -> {
+                        HelpSupportScreen(
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onAboutClick = {
+                                currentScreen = AppScreen.ABOUT
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                            }
+                        )
+                    }
+
+                    AppScreen.ABOUT -> {
+                        AboutScreen(
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                            }
+                        )
+                    }
+
+                    AppScreen.CONNECTION_ERROR -> {
+                        ConnectionErrorScreen(
+                            onTryAgainClick = {
+                                currentScreen = AppScreen.SETUP
+                            },
+                            onGoToHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onHomeClick = {
+                                currentScreen = AppScreen.HOME
+                            },
+                            onScanClick = {
+                                currentScreen = AppScreen.QR_SCAN
+                            },
+                            onAudioClick = {
+                                currentScreen = AppScreen.AUDIO
+                            },
+                            onHelpClick = {
+                                currentScreen = AppScreen.HELP
+                            },
+                            onSettingsClick = {
+                                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                            }
+                        )
                     }
                 }
             }
         }
     }
-
     private fun playAudio(source: String) {
         try {
+            updatePlaybackStatus?.invoke("Connecting")
             Log.d("AUDIO", "playAudio called with source: $source")
 
             if (mediaPlayer != null) {
@@ -238,6 +311,7 @@ class MainActivity : ComponentActivity() {
                     setOnPreparedListener { player ->
                         Log.d("AUDIO", "MediaPlayer prepared, starting playback")
                         player.start()
+                        updatePlaybackStatus?.invoke("Live")
                     }
 
                     setOnBufferingUpdateListener { _, percent ->
@@ -247,6 +321,7 @@ class MainActivity : ComponentActivity() {
                     setOnErrorListener { _, what, extra ->
                         Log.e("AUDIO", "Playback error: what=$what extra=$extra")
                         releasePlayer()
+                        updatePlaybackStatus?.invoke("Stopped")
                         true
                     }
 
@@ -263,11 +338,13 @@ class MainActivity : ComponentActivity() {
             mediaPlayer?.setOnCompletionListener {
                 Log.d("AUDIO", "Playback completed")
                 stopPlayback()
+                updatePlaybackStatus?.invoke("Stopped")
             }
 
         } catch (e: Exception) {
             Log.e("AUDIO", "Exception in playAudio", e)
             releasePlayer()
+            updatePlaybackStatus?.invoke("Stopped")
         }
     }
 
@@ -275,6 +352,7 @@ class MainActivity : ComponentActivity() {
         try {
             if (mediaPlayer?.isPlaying == true) {
                 mediaPlayer?.pause()
+                updatePlaybackStatus?.invoke("Paused")
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -286,9 +364,11 @@ class MainActivity : ComponentActivity() {
             mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = null
+            updatePlaybackStatus?.invoke("Stopped")
         } catch (e: Exception) {
             e.printStackTrace()
             mediaPlayer = null
+            updatePlaybackStatus?.invoke("Stopped")
         }
     }
 
@@ -413,6 +493,18 @@ class MainActivity : ComponentActivity() {
         }
 
         return connectedNames
+    }
+
+    private fun getConnectedBluetoothDeviceName(): String {
+        val outputs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+
+        for (device in outputs) {
+            if (isBluetoothAudioDevice(device)) {
+                return device.productName?.toString() ?: "Bluetooth Audio Device"
+            }
+        }
+
+        return "No Bluetooth device connected"
     }
 
     private fun isBluetoothAudioDevice(device: AudioDeviceInfo): Boolean {
