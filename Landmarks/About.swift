@@ -12,55 +12,52 @@ import SwiftUI
 
 struct About: View {
     var body: some View {
-        print("Entering About")
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "ear")
+                    .font(.title2)
+                    .foregroundColor(AppTheme.blue)
 
-        return VStack {
-        Group {
-            Image("Girl")
-                .resizable()
-//                .aspectRatio(contentMode: .fit)
-                .frame(width: 90, height: 90)
+                Spacer()
 
-            Text("Say What?")
-                .font(.title)
-                .bold()
-                .italic()
-            Spacer()
-            Spacer()
-            Spacer()
-                .position(x: 190, y: 4)
+                Text("Say What?")
+                    .font(.title2)
+                    .bold()
+                    .foregroundColor(AppTheme.blue)
+
+                Spacer()
+
+                Image(systemName: "gearshape")
+                    .font(.title2)
+                    .foregroundColor(AppTheme.blue)
+            }
+            .padding()
+            .background(Color.white)
+
+            ScrollView {
+                VStack(spacing: 30) {
+                    FeatureCard(
+                        icon: "ear",
+                        title: "Clarity First",
+                        description: "Prioritizing the spoken word through intelligent noise suppression technology."
+                    )
+
+                    FeatureCard(
+                        icon: "person.2.rectangle.stack",
+                        title: "Universal Design",
+                        description: "Accessible by everyone, regardless of age or technical ability. Simple by default."
+                    )
+
+                    FeatureCard(
+                        icon: "shield.fill",
+                        title: "Privacy Locked",
+                        description: "All audio processing happens locally on your device."
+                    )
+                }
+                .padding(.top, 45)
+            }
+            .background(AppTheme.background)
         }
-        Group {
-            Text("Say What? was created to help resolve a problem many of us encounter on a regular basis.")
-                .font(.system(size: 20))
-                .bold()
-                .frame(width: 320, alignment: .topLeading)
-                .position(x: 210, y: 1)
-
-            Text("You will now be able to use your personal Bluetooth enabled hearing aids / earbuds or wired earbuds to clearly hear the audio at the venue.")
-                .font(.system(size: 20))
-                .bold()
-                .frame(width: 320, alignment: .topLeading)
-                .position(x: 210, y: 1)
-//            Spacer()
-//            Spacer()
-
-            Text("You can also use the volume controls of your mobile device to adjust the volume and ensure you can comfortably hear the venue's audio.")
-                .font(.system(size:20))
-                .bold()
-                .frame(width: 320, alignment: .topLeading)
-                .position(x: 210, y: 1)
-            Spacer()
-            Spacer()
-            Spacer()
-        }
-
-// Copyright statement
-
-            Text("Copyright: Two Brothers 😀, LLC")
-                .bold()
-        }
-        .navigationBarTitle("About", displayMode: .inline)
     }
 }
 

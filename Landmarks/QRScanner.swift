@@ -11,77 +11,146 @@
 import SwiftUI
 import AVFoundation
 
-struct QRScanner: UIViewControllerRepresentable {
-    
-    func makeUIViewController(context: Context) -> QRScannerController {
-        let controller = QRScannerController()
-        
-        return controller
+struct QRScannerView: View {
+    var body: some View {
+        VStack(spacing: 0) {
+
+            // Top Bar
+            HStack {
+                Image(systemName: "ear")
+                    .foregroundColor(AppTheme.blue)
+
+                Spacer()
+
+                Text("Say What?")
+                    .font(.title2)
+                    .bold()
+                    .foregroundColor(AppTheme.blue)
+
+                Spacer()
+
+                Image(systemName: "gearshape")
+                    .foregroundColor(AppTheme.blue)
+            }
+            .padding()
+            .background(Color.white)
+
+            VStack(spacing: 28) {
+                Text("Scan QR Code")
+                    .font(.title)
+                    .bold()
+                    .foregroundColor(AppTheme.text)
+                    .padding(.top, 25)
+
+                Text("Point camera at venue QR code to\nconnect automatically.")
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(AppTheme.text)
+
+                ZStack {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.gray.opacity(0.55))
+                        .frame(width: 320, height: 320)
+
+                    QRScanner()
+                        .frame(width: 250, height: 250)
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(AppTheme.blue, lineWidth: 3)
+                        )
+                }
+
+                NavigationLink(destination: Setup()) {
+                    HStack {
+                        Image(systemName: "qrcode.viewfinder")
+                        Text("Use Scan")
+                            .bold()
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(AppTheme.blue)
+                    .cornerRadius(10)
+                }
+                .padding(.horizontal, 24)
+
+                NavigationLink(destination: SayWhat()) {
+                    HStack {
+                        Image(systemName: "arrow.left")
+                        Text("Back")
+                            .bold()
+                    }
+                    .foregroundColor(AppTheme.blue)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(AppTheme.blue, lineWidth: 1.5)
+                    )
+                }
+                .padding(.horizontal, 24)
+            }
+
+            Spacer()
+
+            BottomNavBar(selectedTab: .scan)
+        }
+        .background(AppTheme.background)
+        .navigationBarHidden(true)
     }
-    
+}
+
+struct QRScanner: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> QRScannerController {
+        return QRScannerController()
+    }
+
     func updateUIViewController(_ uiViewController: QRScannerController, context: Context) {
     }
 }
 
-class QRScannerController:UIViewController {
+class QRScannerController: UIViewController {
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView: UIView?
-    
     var delegate: AVCaptureMetadataOutputObjectsDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-// Get the back-facing camera for capturing the QR Code
-        
+
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
             print("Failed to connect to the camera")
             return
         }
-        
+
         let videoInput: AVCaptureDeviceInput
-        
+
         do {
-
-// Get an instance of the AVcaptureDeviceInput class using the previous device object
-
             videoInput = try AVCaptureDeviceInput(device: captureDevice)
-            
         } catch {
-
-// If an error occurs, simply print it out and don't continue
-
             print(error)
             return
         }
 
-// Set the input device on the capture session
-
         captureSession.addInput(videoInput)
-        
-// Initialze an AVCaptureMetadataOutput object and set it as the output device to the capture session
 
         let captureMetadataOutput = AVCaptureMetadataOutput()
         captureSession.addOutput(captureMetadataOutput)
-        
-// Set delegate and use the default dispatch queue to execute the call back
 
         captureMetadataOutput.setMetadataObjectsDelegate(delegate, queue: DispatchQueue.main)
-        captureMetadataOutput.metadataObjectTypes = [ .qr ]
-        
-// Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer
+        captureMetadataOutput.metadataObjectTypes = [.qr]
 
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         videoPreviewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer?.frame = view.layer.bounds
-        view.layer.addSublayer(videoPreviewLayer!)
-        
-// Start video capture
+
+        if let videoPreviewLayer = videoPreviewLayer {
+            view.layer.addSublayer(videoPreviewLayer)
+        }
 
         DispatchQueue.global(qos: .background).async {
             self.captureSession.startRunning()
-            
         }
     }
 }
