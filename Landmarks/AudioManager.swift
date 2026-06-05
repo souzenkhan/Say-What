@@ -160,7 +160,7 @@ final class AudioManager: NSObject, ObservableObject {
         if let output = outputs.first {
             currentOutput = output.portName
         } else {
-            currentOutput = "No Output Device"
+            currentOutput = "No Device Connected"
         }
     }
 }

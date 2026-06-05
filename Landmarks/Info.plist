@@ -63,5 +63,7 @@
     	<key>NSAllowsArbitraryLoads</key>
     	<true/>
 	</dict>	
+	<key>NSCameraUsageDescription</key>
+<string>Camera access is needed to scan venue QR codes.</string>
 </dict>
 </plist>
