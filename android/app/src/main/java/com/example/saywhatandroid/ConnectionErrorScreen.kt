@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -73,7 +74,7 @@ fun ConnectionErrorScreen(
             Text(
                 text = "⌁",
                 color = Color(0xFFB00020),
-                fontSize = 48.sp,
+                fontSize = 52.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -82,45 +83,48 @@ fun ConnectionErrorScreen(
             Text(
                 text = "Connection Lost",
                 color = Color(0xFF17172A),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = "We're having trouble connecting\nto the audio stream in this\nvenue.",
                 color = Color(0xFF17172A),
-                fontSize = 13.sp,
+                fontSize = 19.sp,
                 textAlign = TextAlign.Center,
-                lineHeight = 19.sp
+                lineHeight = 28.sp
             )
 
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "CLICK TO GO TO THE\nSETTINGS APP",
                 color = Color(0xFF17172A),
-                fontSize = 11.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
+                lineHeight = 28.sp,
+                textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable {
                     onSettingsClick()
                 }
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             HowToFixCard()
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
             Button(
                 onClick = onTryAgainClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(46.dp),
-                shape = RoundedCornerShape(6.dp),
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF3047E8)
                 )
@@ -128,24 +132,24 @@ fun ConnectionErrorScreen(
                 Text(
                     text = "⟳ Try Again",
                     color = Color.White,
-                    fontSize = 13.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedButton(
                 onClick = onGoToHelpClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp),
-                shape = RoundedCornerShape(6.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = "ⓘ Go to Help",
                     color = Color(0xFF3047E8),
-                    fontSize = 13.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -165,11 +169,11 @@ fun ConnectionErrorScreen(
                 Text(
                     text = "Connection illustration",
                     color = Color(0xFF999999),
-                    fontSize = 13.sp
+                    fontSize = 15.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(90.dp))
         }
     }
 }
@@ -179,7 +183,7 @@ fun ErrorTopHeader(onSettingsClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(52.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -193,7 +197,7 @@ fun ErrorTopHeader(onSettingsClick: () -> Unit) {
         Text(
             text = "Say What?",
             color = Color(0xFF3047E8),
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -221,12 +225,12 @@ fun HowToFixCard() {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Text(
                 text = "HOW TO FIX THIS",
                 color = Color(0xFF3047E8),
-                fontSize = 12.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -238,7 +242,7 @@ fun HowToFixCard() {
                 body = "Ensure you are connected to\nthe venue's public network."
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             FixItem(
                 icon = "↗",
@@ -246,7 +250,7 @@ fun HowToFixCard() {
                 body = "Try moving closer to the stage\nor service counter."
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             FixItem(
                 icon = "↻",
@@ -269,14 +273,14 @@ fun FixItem(
     ) {
         Box(
             modifier = Modifier
-                .size(30.dp)
+                .size(34.dp)
                 .background(Color(0xFFE9EBFF), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = icon,
                 color = Color(0xFF3047E8),
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -287,17 +291,17 @@ fun FixItem(
             Text(
                 text = title,
                 color = Color(0xFF17172A),
-                fontSize = 13.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
             Text(
                 text = body,
                 color = Color(0xFF333333),
-                fontSize = 12.sp,
-                lineHeight = 17.sp
+                fontSize = 16.sp,
+                lineHeight = 24.sp
             )
         }
     }
@@ -315,7 +319,7 @@ fun ConnectionErrorBottomBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -328,7 +332,7 @@ fun ConnectionErrorBottomBar(
 
         ConnectionBottomNavIcon(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = false,
             onClick = onScanClick
         )
@@ -366,8 +370,8 @@ fun ConnectionBottomNavIcon(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -406,8 +410,8 @@ fun ConnectionBottomNavText(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -428,4 +432,3 @@ fun ConnectionBottomNavText(
         )
     }
 }
-

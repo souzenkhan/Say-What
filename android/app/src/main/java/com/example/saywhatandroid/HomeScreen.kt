@@ -55,7 +55,10 @@ fun SayWhatHomeScreen(
 
     Scaffold(
         topBar = {
-            TopHeader(onSettingsClick = onBluetoothSettingsClick)
+            TopHeader(
+                onSettingsClick = onBluetoothSettingsClick,
+                onAboutClick = onAboutClick
+            )
         },
         bottomBar = {
             BottomNavigationBar(
@@ -104,19 +107,19 @@ fun SayWhatHomeScreen(
 
             IllustrationCard()
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ReadySection()
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ScanButton(onScanClick = onScanClick)
 
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             RecentVenuesSection()
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -134,21 +137,24 @@ fun SayWhatHomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             NearbyVenuesSection()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             AboutLink(onAboutClick = onAboutClick)
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
 
 @Composable
-fun TopHeader(onSettingsClick: () -> Unit) {
+fun TopHeader(
+    onSettingsClick: () -> Unit,
+    onAboutClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,8 +174,11 @@ fun TopHeader(onSettingsClick: () -> Unit) {
         Text(
             text = "Say What?",
             color = Color(0xFF3047E8),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable {
+                onAboutClick()
+            }
         )
 
         Icon(
@@ -194,20 +203,22 @@ fun IntroSection() {
         Text(
             text = "Hearing clearly\nshouldn't be a luxury.",
             color = Color(0xFF2835D8),
-            fontSize = 24.sp,
+            fontSize = 29.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            lineHeight = 28.sp
+            lineHeight = 34.sp
         )
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Say What? was born from a simple\nobservation: public spaces are often\ndesigned for aesthetics, not\nacoustics. Our mission is to bridge\nthe communication gap for those\nwith hearing challenges using\nadvanced real-time audio\nprocessing.",
-            color = Color(0xFF111111),
-            fontSize = 14.sp,
+            text = "Say What? helps people with hearing challenges listen more clearly in public spaces like lectures, concerts, theaters, and services. By connecting to venue audio, the app delivers clearer sound directly to headphones, earbuds, or hearing aids.",
+            color = Color(0xFF333333),
+            fontSize = 17.sp,
             textAlign = TextAlign.Center,
-            lineHeight = 21.sp
+            lineHeight = 26.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(horizontal = 4.dp)
         )
     }
 }
@@ -254,7 +265,7 @@ fun ReadySection() {
         Text(
             text = "Ready to Listen?",
             color = Color(0xFF17172A),
-            fontSize = 20.sp,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -263,9 +274,9 @@ fun ReadySection() {
         Text(
             text = "Connect to the venue audio by\nclicking on the button below",
             color = Color(0xFF151515),
-            fontSize = 13.sp,
+            fontSize = 17.sp,
             textAlign = TextAlign.Center,
-            lineHeight = 18.sp
+            lineHeight = 25.sp
         )
     }
 }
@@ -276,7 +287,7 @@ fun ScanButton(onScanClick: () -> Unit) {
         onClick = onScanClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp),
+            .height(56.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF3047E8)
@@ -290,7 +301,7 @@ fun ScanButton(onScanClick: () -> Unit) {
                 painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                 contentDescription = "Scan QR Code",
                 tint = Color.White,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(20.dp)
             )
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -298,7 +309,7 @@ fun ScanButton(onScanClick: () -> Unit) {
             Text(
                 text = "SCAN QR CODE",
                 color = Color.White,
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp
             )
@@ -317,19 +328,19 @@ fun RecentVenuesSection() {
             Text(
                 text = "Recent Venues",
                 color = Color(0xFF111111),
-                fontSize = 15.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = "View All",
                 color = Color(0xFF3047E8),
-                fontSize = 11.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Medium
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(13.dp))
 
         VenueCard(
             emoji = "🏛",
@@ -337,7 +348,7 @@ fun RecentVenuesSection() {
             subtitle = "Visited\nYesterday"
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(13.dp))
 
         VenueCard(
             emoji = "🎬",
@@ -356,7 +367,7 @@ fun VenueCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(86.dp),
+            .height(112.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -366,49 +377,50 @@ fun VenueCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(60.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFE7E9FF)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = emoji,
-                    fontSize = 26.sp
+                    fontSize = 28.sp
                 )
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = title,
                     color = Color(0xFF111111),
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    lineHeight = 15.sp
+                    lineHeight = 20.sp
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = subtitle,
                     color = Color(0xFF555555),
-                    fontSize = 11.sp,
-                    lineHeight = 13.sp
+                    fontSize = 14.sp,
+                    lineHeight = 19.sp
                 )
             }
 
             Text(
                 text = ">",
                 color = Color(0xFF3047E8),
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -421,7 +433,7 @@ fun NearbyVenuesSection() {
         Text(
             text = "Nearby Venues",
             color = Color(0xFF111111),
-            fontSize = 16.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -432,7 +444,7 @@ fun NearbyVenuesSection() {
             distance = "0.2 miles away"
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         NearbyVenueItem(
             title = "Olympic Stadium",
@@ -449,7 +461,7 @@ fun NearbyVenueItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(58.dp)
+            .height(72.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(Color.White)
             .padding(horizontal = 12.dp),
@@ -457,14 +469,14 @@ fun NearbyVenueItem(
     ) {
         Box(
             modifier = Modifier
-                .size(34.dp)
+                .size(38.dp)
                 .clip(CircleShape)
                 .background(Color(0xFF5F6DFF)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "📍",
-                fontSize = 15.sp
+                fontSize = 17.sp
             )
         }
 
@@ -476,20 +488,22 @@ fun NearbyVenueItem(
             Text(
                 text = title,
                 color = Color(0xFF111111),
-                fontSize = 13.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(3.dp))
 
             Text(
                 text = distance,
                 color = Color(0xFF3047E8),
-                fontSize = 11.sp
+                fontSize = 14.sp
             )
         }
 
         Box(
             modifier = Modifier
-                .size(34.dp)
+                .size(38.dp)
                 .clip(CircleShape)
                 .background(Color(0xFFE9EBFF)),
             contentAlignment = Alignment.Center
@@ -497,7 +511,7 @@ fun NearbyVenueItem(
             Text(
                 text = "▶",
                 color = Color(0xFF3047E8),
-                fontSize = 13.sp
+                fontSize = 15.sp
             )
         }
     }
@@ -517,7 +531,8 @@ fun AboutLink(onAboutClick: () -> Unit) {
         Text(
             text = "ⓘ About Say What?",
             color = Color(0xFF3047E8),
-            fontSize = 11.sp
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -532,8 +547,8 @@ fun WireframeNextButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .width(72.dp)
-            .height(34.dp),
+            .width(76.dp)
+            .height(38.dp),
         shape = RoundedCornerShape(5.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF3047E8)
@@ -543,7 +558,7 @@ fun WireframeNextButton(onClick: () -> Unit) {
         Text(
             text = "NEXT",
             color = Color.White,
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.5.sp
         )
@@ -562,7 +577,7 @@ fun BottomNavigationBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .background(Color.White),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -575,7 +590,7 @@ fun BottomNavigationBar(
 
         BottomNavItem(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = false,
             onClick = onScanClick
         )
@@ -603,22 +618,29 @@ fun BottomNavItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
             tint = color,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -636,22 +658,29 @@ fun BottomNavTextItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = icon,
             color = color,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,

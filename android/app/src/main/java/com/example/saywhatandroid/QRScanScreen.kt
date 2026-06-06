@@ -1,6 +1,5 @@
 package com.example.saywhatandroid
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,7 @@ fun QRScanScreen(
 ) {
     Scaffold(
         topBar = {
-            TopHeader(onSettingsClick = onSettingsClick)
+            QRScanTopHeader(onSettingsClick = onSettingsClick)
         },
         bottomBar = {
             QRScanBottomBar(
@@ -54,7 +53,7 @@ fun QRScanScreen(
             )
         },
         containerColor = Color(0xFFF8F8FF)
-    ){ paddingValues ->
+    ) { paddingValues ->
 
         Column(
             modifier = Modifier
@@ -64,21 +63,22 @@ fun QRScanScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text(
                 text = "Scan QR Code",
                 color = Color(0xFF17172A),
-                fontSize = 24.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(34.dp))
+
+            Spacer(modifier = Modifier.height(36.dp))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(245.dp)
+                    .height(260.dp)
                     .background(
                         color = Color(0xFF8E8E8E),
                         shape = RoundedCornerShape(14.dp)
@@ -87,7 +87,7 @@ fun QRScanScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(175.dp)
+                        .size(185.dp)
                         .background(
                             color = Color.White,
                             shape = RoundedCornerShape(6.dp)
@@ -103,18 +103,18 @@ fun QRScanScreen(
                         painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                         contentDescription = "QR Code Scanner",
                         tint = Color(0xFF3047E8),
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.size(66.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(34.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
             Button(
                 onClick = onUseScanClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .height(58.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF3047E8)
@@ -124,26 +124,26 @@ fun QRScanScreen(
                     painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                     contentDescription = "Use Scan",
                     tint = Color.White,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(22.dp)
                 )
 
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(10.dp))
 
                 Text(
                     text = "Use Scan",
                     color = Color.White,
-                    fontSize = 14.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             OutlinedButton(
                 onClick = onBackClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(54.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = Color(0xFF3047E8)
@@ -152,11 +152,49 @@ fun QRScanScreen(
                 Text(
                     text = "← Back",
                     color = Color(0xFF3047E8),
-                    fontSize = 15.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
+    }
+}
+
+@Composable
+fun QRScanTopHeader(onSettingsClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .background(Color.White)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_hearing),
+            contentDescription = "Say What Logo",
+            tint = Color(0xFF3047E8),
+            modifier = Modifier.size(24.dp)
+        )
+
+        Text(
+            text = "Say What?",
+            color = Color(0xFF3047E8),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_settings),
+            contentDescription = "Settings",
+            tint = Color(0xFF3047E8),
+            modifier = Modifier
+                .size(22.dp)
+                .clickable {
+                    onSettingsClick()
+                }
+        )
     }
 }
 
@@ -172,7 +210,7 @@ fun QRScanBottomBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .background(Color.White),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -185,7 +223,7 @@ fun QRScanBottomBar(
 
         QRScanBottomNavItem(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = true,
             onClick = onScanClick
         )
@@ -213,22 +251,29 @@ fun QRScanBottomNavItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
             tint = color,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -246,22 +291,29 @@ fun QRScanBottomNavTextItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = icon,
             color = color,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,

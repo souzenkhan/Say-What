@@ -26,14 +26,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +47,7 @@ fun AudioScreen(
     onScanClick: () -> Unit,
     onHelpClick: () -> Unit,
     onSettingsClick: () -> Unit
-){
-    var volume by remember { mutableStateOf(0.75f) }
+) {
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -74,29 +68,20 @@ fun AudioScreen(
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp),
+                .padding(bottom = 90.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AudioTopHeader(onSettingsClick = onSettingsClick)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
             AudioSessionCard(playbackStatus = playbackStatus)
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
             BluetoothStatusCard(
                 bluetoothDeviceName = bluetoothDeviceName,
                 bluetoothStatus = bluetoothStatus
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            VolumeCard(
-                volume = volume,
-                onVolumeChange = {
-                    volume = it
-                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -109,7 +94,7 @@ fun AudioTopHeader(onSettingsClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(52.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -123,7 +108,7 @@ fun AudioTopHeader(onSettingsClick: () -> Unit) {
         Text(
             text = "Say What?",
             color = Color(0xFF3047E8),
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -145,7 +130,7 @@ fun AudioSessionCard(playbackStatus: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(215.dp),
+            .height(235.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -155,7 +140,7 @@ fun AudioSessionCard(playbackStatus: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(18.dp)
+                .padding(20.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -172,33 +157,35 @@ fun AudioSessionCard(playbackStatus: String) {
                         else -> "Session Stopped"
                     },
                     color = Color(0xFF17172A),
-                    fontSize = 13.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = "Grand Concert Hall",
                 color = Color(0xFF17172A),
-                fontSize = 21.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = "◷  00:42:17",
                 color = Color(0xFF333333),
-                fontSize = 13.sp
+                fontSize = 16.sp
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             WaveformBox()
         }
     }
 }
+
 @Composable
 fun PlaybackStatusBadge(playbackStatus: String) {
     val badgeColor = when (playbackStatus) {
@@ -217,8 +204,8 @@ fun PlaybackStatusBadge(playbackStatus: String) {
 
     Box(
         modifier = Modifier
-            .height(24.dp)
-            .width(92.dp)
+            .height(30.dp)
+            .width(116.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(badgeColor),
         contentAlignment = Alignment.Center
@@ -226,11 +213,12 @@ fun PlaybackStatusBadge(playbackStatus: String) {
         Text(
             text = badgeText,
             color = Color.White,
-            fontSize = 9.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Bold
         )
     }
 }
+
 @Composable
 fun BluetoothStatusCard(
     bluetoothDeviceName: String,
@@ -239,7 +227,7 @@ fun BluetoothStatusCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(92.dp),
+            .height(140.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -249,12 +237,12 @@ fun BluetoothStatusCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 18.dp),
+                .padding(horizontal = 20.dp, vertical = 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(52.dp)
                     .clip(CircleShape)
                     .background(Color(0xFFE9EBFF)),
                 contentAlignment = Alignment.Center
@@ -262,38 +250,41 @@ fun BluetoothStatusCard(
                 Text(
                     text = "BT",
                     color = Color(0xFF3047E8),
-                    fontSize = 13.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Bluetooth Output",
                     color = Color(0xFF17172A),
-                    fontSize = 13.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = bluetoothDeviceName,
                     color = Color(0xFF3047E8),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 21.sp
                 )
 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = bluetoothStatus,
                     color = Color(0xFF555555),
-                    fontSize = 11.sp
+                    fontSize = 14.sp,
+                    lineHeight = 19.sp
                 )
             }
         }
@@ -305,13 +296,13 @@ fun WaveformBox() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(96.dp)
+            .height(100.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(Color(0xFFEFEFFF)),
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.height(78.dp),
+            modifier = Modifier.height(82.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -358,89 +349,6 @@ fun AnimatedWaveBar(
 }
 
 @Composable
-fun VolumeCard(
-    volume: Float,
-    onVolumeChange: (Float) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(170.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 22.dp, vertical = 20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_volume),
-                    contentDescription = "Volume",
-                    tint = Color(0xFF3047E8),
-                    modifier = Modifier.size(24.dp)
-                )
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Text(
-                    text = "VOLUME",
-                    color = Color(0xFF17172A),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "${(volume * 100).toInt()}%",
-                    color = Color(0xFF3047E8),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Slider(
-                value = volume,
-                onValueChange = onVolumeChange,
-                colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF4B55E7),
-                    activeTrackColor = Color(0xFF4B55E7),
-                    inactiveTrackColor = Color(0xFFDDE1FF)
-                )
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Min",
-                    color = Color(0xFF17172A),
-                    fontSize = 12.sp
-                )
-
-                Text(
-                    text = "Max",
-                    color = Color(0xFF17172A),
-                    fontSize = 12.sp
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun AudioBottomBar(
     onHomeClick: () -> Unit,
     onScanClick: () -> Unit,
@@ -452,7 +360,7 @@ fun AudioBottomBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -465,7 +373,7 @@ fun AudioBottomBar(
 
         AudioBottomNavIcon(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = false,
             onClick = onScanClick
         )
@@ -504,8 +412,8 @@ fun AudioBottomNavIcon(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -545,8 +453,8 @@ fun AudioBottomNavText(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
