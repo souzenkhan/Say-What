@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
             }
             var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
             var bluetoothDeviceName by remember { mutableStateOf("No Bluetooth device connected") }
+            var shouldStartAudio by remember { mutableStateOf(false) }
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) {
@@ -124,7 +125,7 @@ class MainActivity : ComponentActivity() {
                     AppScreen.HOME -> {
                         SayWhatHomeScreen(
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO
@@ -144,16 +145,17 @@ class MainActivity : ComponentActivity() {
                     AppScreen.QR_SCAN -> {
                         QRScanScreen(
                             onUseScanClick = {
-                                currentScreen = AppScreen.SETUP
+                                shouldStartAudio = true
+                                currentScreen = AppScreen.AUDIO
                             },
                             onBackClick = {
-                                currentScreen = AppScreen.HOME
+                                currentScreen = AppScreen.SETUP
                             },
                             onHomeClick = {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO
@@ -172,6 +174,16 @@ class MainActivity : ComponentActivity() {
                             onScanVenueClick = {
                                 currentScreen = AppScreen.QR_SCAN
                             },
+                            onConnectUsingUrlClick = { url ->
+                                val fixedUrl = if (url.startsWith("http://") || url.startsWith("https://")) {
+                                    url
+                                } else {
+                                    "https://$url"
+                                }
+
+                                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(fixedUrl))
+                                startActivity(browserIntent)
+                            },
                             onHelpClick = {
                                 currentScreen = AppScreen.HELP
                             },
@@ -179,7 +191,7 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO
@@ -191,8 +203,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     AppScreen.AUDIO -> {
-                        LaunchedEffect(Unit) {
-                            playAudio(STREAM_URL)
+                        LaunchedEffect(shouldStartAudio) {
+                            if (shouldStartAudio) {
+                                playAudio(STREAM_URL)
+                                shouldStartAudio = false
+                            }
                         }
 
                         AudioScreen(
@@ -203,7 +218,7 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onHelpClick = {
                                 currentScreen = AppScreen.HELP
@@ -220,13 +235,16 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO
                             },
                             onAboutClick = {
                                 currentScreen = AppScreen.ABOUT
+                            },
+                            onConnectionErrorClick = {
+                                currentScreen = AppScreen.CONNECTION_ERROR
                             },
                             onSettingsClick = {
                                 startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
@@ -240,7 +258,7 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO
@@ -266,7 +284,7 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = AppScreen.HOME
                             },
                             onScanClick = {
-                                currentScreen = AppScreen.QR_SCAN
+                                currentScreen = AppScreen.SETUP
                             },
                             onAudioClick = {
                                 currentScreen = AppScreen.AUDIO

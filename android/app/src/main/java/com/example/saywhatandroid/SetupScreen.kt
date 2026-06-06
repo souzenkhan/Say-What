@@ -10,18 +10,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,12 +43,17 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SetupScreen(
     onScanVenueClick: () -> Unit,
+    onConnectUsingUrlClick: (String) -> Unit,
     onHelpClick: () -> Unit,
     onHomeClick: () -> Unit,
     onScanClick: () -> Unit,
     onAudioClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+    var showUrlInput by remember { mutableStateOf(false) }
+    var streamUrl by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
+
     Scaffold(
         bottomBar = {
             SetupBottomBar(
@@ -56,23 +70,24 @@ fun SetupScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SetupTopHeader(onSettingsClick = onSettingsClick)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "Connect to Venue\nAudio",
                 color = Color(0xFF17172A),
-                fontSize = 24.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                lineHeight = 30.sp
+                lineHeight = 36.sp
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -90,7 +105,7 @@ fun SetupScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(92.dp)
+                            .size(96.dp)
                             .background(Color(0xFFE9EBFF), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
@@ -98,7 +113,7 @@ fun SetupScreen(
                             painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                             contentDescription = "QR Code",
                             tint = Color(0xFF3047E8),
-                            modifier = Modifier.size(44.dp)
+                            modifier = Modifier.size(46.dp)
                         )
                     }
 
@@ -108,7 +123,7 @@ fun SetupScreen(
                         onClick = onScanVenueClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(58.dp),
+                            .height(60.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF3047E8)
@@ -118,7 +133,7 @@ fun SetupScreen(
                             painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                             contentDescription = "Scan Venue QR Code",
                             tint = Color.White,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
 
                         Spacer(modifier = Modifier.size(10.dp))
@@ -126,19 +141,13 @@ fun SetupScreen(
                         Text(
                             text = "Scan Venue QR Code",
                             color = Color.White,
-                            fontSize = 16.sp
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    Text(
-                        text = "Look for a \"Say What?\" poster at the\ncounter or on your table.",
-                        color = Color(0xFF17172A),
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 19.sp
-                    )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -154,14 +163,128 @@ fun SetupScreen(
                     Text(
                         text = "ⓘ Need help connecting?",
                         color = Color(0xFF3047E8),
-                        fontSize = 13.sp,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.clickable {
                             onHelpClick()
                         }
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    showUrlInput = !showUrlInput
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF4D63F3)
+                )
+            ) {
+                Text(
+                    text = "Connect Using URL",
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            if (showUrlInput) {
+                Spacer(modifier = Modifier.height(14.dp))
+
+                OutlinedTextField(
+                    value = streamUrl,
+                    onValueChange = { streamUrl = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 58.dp),
+                    placeholder = {
+                        Text(
+                            text = "Type URL",
+                            color = Color(0xFF777777),
+                            fontSize = 16.sp
+                        )
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color(0xFF17172A),
+                        unfocusedTextColor = Color(0xFF17172A),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedIndicatorColor = Color(0xFF3047E8),
+                        unfocusedIndicatorColor = Color(0xFFD0D0D8),
+                        cursorColor = Color(0xFF3047E8)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Button(
+                    onClick = {
+                        if (streamUrl.isNotBlank()) {
+                            onConnectUsingUrlClick(streamUrl.trim())
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF5F6DFF)
+                    )
+                ) {
+                    Text(
+                        text = "Enter",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(90.dp))
         }
+    }
+}
+
+@Composable
+fun SetupTopHeader(onSettingsClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_hearing),
+            contentDescription = "Say What Logo",
+            tint = Color(0xFF3047E8),
+            modifier = Modifier.size(24.dp)
+        )
+
+        Text(
+            text = "Say What?",
+            color = Color(0xFF3047E8),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_settings),
+            contentDescription = "Settings",
+            tint = Color(0xFF3047E8),
+            modifier = Modifier
+                .size(22.dp)
+                .clickable {
+                    onSettingsClick()
+                }
+        )
     }
 }
 
@@ -177,7 +300,7 @@ fun SetupBottomBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -190,7 +313,7 @@ fun SetupBottomBar(
 
         SetupBottomNavItem(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = true,
             onClick = onScanClick
         )
@@ -218,22 +341,29 @@ fun SetupBottomNavItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
             tint = color,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -243,42 +373,7 @@ fun SetupBottomNavItem(
         )
     }
 }
-@Composable
-fun SetupTopHeader(onSettingsClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .padding(horizontal = 0.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_hearing),
-            contentDescription = "Say What Logo",
-            tint = Color(0xFF3047E8),
-            modifier = Modifier.size(22.dp)
-        )
 
-        Text(
-            text = "Say What?",
-            color = Color(0xFF3047E8),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Icon(
-            painter = painterResource(id = R.drawable.ic_settings),
-            contentDescription = "Settings",
-            tint = Color(0xFF3047E8),
-            modifier = Modifier
-                .size(20.dp)
-                .clickable {
-                    onSettingsClick()
-                }
-        )
-    }
-}
 @Composable
 fun SetupBottomNavTextItem(
     icon: String,
@@ -286,22 +381,29 @@ fun SetupBottomNavTextItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = icon,
             color = color,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -311,4 +413,3 @@ fun SetupBottomNavTextItem(
         )
     }
 }
-

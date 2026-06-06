@@ -62,7 +62,7 @@ fun AboutScreen(
         ) {
             AboutTopHeader(onSettingsClick = onSettingsClick)
 
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             AboutInfoCard(
                 iconType = "hearing",
@@ -86,7 +86,7 @@ fun AboutScreen(
                 body = "All audio processing happens\nlocally on your device."
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(90.dp))
         }
     }
 }
@@ -96,7 +96,7 @@ fun AboutTopHeader(onSettingsClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(52.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -110,7 +110,7 @@ fun AboutTopHeader(onSettingsClick: () -> Unit) {
         Text(
             text = "Say What?",
             color = Color(0xFF3047E8),
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -134,8 +134,7 @@ fun AboutInfoCard(
     body: String
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -147,27 +146,27 @@ fun AboutInfoCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 22.dp, vertical = 20.dp),
+                .padding(horizontal = 22.dp, vertical = 22.dp),
             horizontalAlignment = Alignment.Start
         ) {
             AboutCardIcon(iconType = iconType)
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = title,
                 color = Color(0xFF17172A),
-                fontSize = 20.sp,
+                fontSize = 23.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = body,
                 color = Color(0xFF17172A),
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
+                fontSize = 17.sp,
+                lineHeight = 25.sp,
                 textAlign = TextAlign.Start
             )
         }
@@ -182,7 +181,7 @@ fun AboutCardIcon(iconType: String) {
                 painter = painterResource(id = R.drawable.ic_hearing),
                 contentDescription = "Clarity First",
                 tint = Color(0xFF3047E8),
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
 
@@ -191,19 +190,19 @@ fun AboutCardIcon(iconType: String) {
                 painter = painterResource(id = R.drawable.baseline_qr_code_scanner_24),
                 contentDescription = "Universal Design",
                 tint = Color(0xFF3047E8),
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
 
         else -> {
             Box(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(30.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "▣",
                     color = Color(0xFF3047E8),
-                    fontSize = 26.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -223,7 +222,7 @@ fun AboutBottomBar(
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -236,7 +235,7 @@ fun AboutBottomBar(
 
         AboutBottomNavIcon(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = false,
             onClick = onScanClick
         )
@@ -264,22 +263,29 @@ fun AboutBottomNavIcon(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
             tint = color,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -297,22 +303,29 @@ fun AboutBottomNavText(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) Color(0xFF3047E8) else Color(0xFF777777)
+    val color = if (selected) Color.White else Color(0xFF777777)
+    val backgroundColor = if (selected) Color(0xFF4B55E7) else Color.Transparent
 
     Column(
-        modifier = Modifier.clickable {
-            onClick()
-        },
+        modifier = Modifier
+            .background(backgroundColor, RoundedCornerShape(28.dp))
+            .clickable {
+                onClick()
+            }
+            .padding(
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = icon,
             color = color,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = label,
@@ -322,4 +335,3 @@ fun AboutBottomNavText(
         )
     }
 }
-

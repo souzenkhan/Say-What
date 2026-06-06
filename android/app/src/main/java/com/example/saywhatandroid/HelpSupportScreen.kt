@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -45,6 +44,7 @@ fun HelpSupportScreen(
     onScanClick: () -> Unit,
     onAudioClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onConnectionErrorClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -77,22 +77,22 @@ fun HelpSupportScreen(
             Text(
                 text = "Help & Support",
                 color = Color(0xFF17172A),
-                fontSize = 24.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = "Find answers to common questions\nand troubleshooting tips for your\nhearing assistance experience.",
                 color = Color(0xFF17172A),
-                fontSize = 13.sp,
-                lineHeight = 19.sp,
+                fontSize = 17.sp,
+                lineHeight = 25.sp,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             OutlinedTextField(
                 value = searchText,
@@ -100,36 +100,41 @@ fun HelpSupportScreen(
                 placeholder = {
                     Text(
                         text = "Search help topics",
-                        fontSize = 13.sp,
+                        fontSize = 16.sp,
                         color = Color(0xFF777777)
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .height(58.dp),
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFF17172A),
+                    unfocusedTextColor = Color(0xFF17172A),
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     focusedIndicatorColor = Color(0xFF3047E8),
-                    unfocusedIndicatorColor = Color(0xFFD0D0D8)
+                    unfocusedIndicatorColor = Color(0xFFD0D0D8),
+                    cursorColor = Color(0xFF3047E8)
                 )
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             HowToConnectCard()
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
-            TroubleshootingCard()
+            TroubleshootingCard(
+                onConnectionErrorClick = onConnectionErrorClick
+            )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
             FAQSection()
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(90.dp))
         }
     }
 }
@@ -179,7 +184,7 @@ fun HowToConnectCard() {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -187,7 +192,7 @@ fun HowToConnectCard() {
                 Text(
                     text = "⌁",
                     color = Color(0xFF3047E8),
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -196,12 +201,12 @@ fun HowToConnectCard() {
                 Text(
                     text = "How to Connect",
                     color = Color(0xFF3047E8),
-                    fontSize = 18.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ConnectStep(
                 number = "1",
@@ -209,15 +214,15 @@ fun HowToConnectCard() {
                 body = "Locate your phone's Settings app. Navigate to Wi-Fi and make sure it is turned on. Look for the network named Venue_Guest_WiFi or similar."
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ConnectStep(
                 number = "2",
                 title = "SCAN QR CODE",
-                body = "Open the Say What? app and tap the Scan icon in the bottom navigation bar. Center the venue QR code on the poster or table sign inside the camera frame."
+                body = "Open the Say What? app and tap the Connect icon in the bottom navigation bar. Center the venue QR code on the poster or table sign inside the camera frame."
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ConnectStep(
                 number = "3",
@@ -237,14 +242,14 @@ fun ConnectStep(
     Column {
         Box(
             modifier = Modifier
-                .size(28.dp)
+                .size(32.dp)
                 .background(Color(0xFF3047E8), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = number,
                 color = Color.White,
-                fontSize = 13.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -254,23 +259,25 @@ fun ConnectStep(
         Text(
             text = title,
             color = Color(0xFF17172A),
-            fontSize = 12.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = body,
             color = Color(0xFF17172A),
-            fontSize = 12.sp,
-            lineHeight = 18.sp
+            fontSize = 15.sp,
+            lineHeight = 23.sp
         )
     }
 }
 
 @Composable
-fun TroubleshootingCard() {
+fun TroubleshootingCard(
+    onConnectionErrorClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -278,11 +285,11 @@ fun TroubleshootingCard() {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Text(
                 text = "🔧",
-                fontSize = 20.sp
+                fontSize = 24.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -290,28 +297,26 @@ fun TroubleshootingCard() {
             Text(
                 text = "Troubleshooting",
                 color = Color(0xFF17172A),
-                fontSize = 18.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Quick fixes for common audio and connection issues.",
                 color = Color(0xFF17172A),
-                fontSize = 12.sp,
-                lineHeight = 18.sp
+                fontSize = 15.sp,
+                lineHeight = 23.sp
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Button(
-                onClick = {
-                    // Later: navigate to detailed troubleshooting screen
-                },
+                onClick = onConnectionErrorClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(42.dp),
+                    .height(48.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF3047E8)
@@ -320,7 +325,7 @@ fun TroubleshootingCard() {
                 Text(
                     text = "View Fixes",
                     color = Color.White,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -336,25 +341,25 @@ fun FAQSection() {
         Text(
             text = "FAQs",
             color = Color(0xFF17172A),
-            fontSize = 20.sp,
+            fontSize = 23.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         FAQDropdown(
             question = "Why is my audio delayed?",
             answer = "A small delay can happen while the stream buffers. Make sure you are on the venue Wi-Fi and close other apps using audio."
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         FAQDropdown(
             question = "Can I use Bluetooth hearing aids?",
             answer = "Yes. Pair your hearing aids or earbuds with your phone before starting the audio stream."
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         FAQDropdown(
             question = "What if the QR code does not work?",
@@ -381,7 +386,7 @@ fun FAQDropdown(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(18.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -389,7 +394,7 @@ fun FAQDropdown(
                 Text(
                     text = question,
                     color = Color(0xFF17172A),
-                    fontSize = 14.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
@@ -397,19 +402,19 @@ fun FAQDropdown(
                 Text(
                     text = if (expanded) "⌃" else "⌄",
                     color = Color(0xFF3047E8),
-                    fontSize = 18.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             if (expanded) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = answer,
                     color = Color(0xFF333333),
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp
+                    fontSize = 15.sp,
+                    lineHeight = 23.sp
                 )
             }
         }
@@ -441,7 +446,7 @@ fun HelpBottomBar(
 
         HelpBottomNavIcon(
             iconRes = R.drawable.baseline_qr_code_scanner_24,
-            label = "Scan",
+            label = "Connect",
             selected = false,
             onClick = onScanClick
         )
@@ -479,8 +484,8 @@ fun HelpBottomNavIcon(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -519,8 +524,8 @@ fun HelpBottomNavText(
                 onClick()
             }
             .padding(
-                horizontal = if (selected) 18.dp else 0.dp,
-                vertical = if (selected) 8.dp else 0.dp
+                horizontal = if (selected) 16.dp else 6.dp,
+                vertical = if (selected) 8.dp else 4.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -541,4 +546,3 @@ fun HelpBottomNavText(
         )
     }
 }
-
