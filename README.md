@@ -1,277 +1,130 @@
-# 📡 Audio Streaming Setup (Step-by-Step)
+## Say What
+### System Overview
+Say What is an accessibility-focused mobile application designed to improve the listening experience at live events. Audio from a presenter’s microphone is streamed over a local network and delivered to mobile devices, allowing users to listen through Bluetooth hearing aids, headphones, or phone speakers.
 
-## Please read before running the project
+### The system consists of:
+Node.js streaming server
+Native iOS application
+Native Android application
 
-This project uses a **local IP address**.
+### Supported Platforms
+Backend:
+macOS
+Windows
+iOS:
+macOS
+Xcode
+Android:
+Windows or macOS
+Android Studio
 
-- Every person running the server will have a different IP
-- You MUST replace the IP in the app code
+### Legacy React Prototype
+An early React Native prototype was developed during initial project exploration. The final architecture uses separate native iOS and Android applications connected to a shared backend streaming server. The React prototype is no longer maintained and is not required to run the current system.
 
----
+### Backend Setup
+Prerequisites
+Install:
+Node.js
+npm
+FFmpeg
+Verify:
+node -v
+npm -v
+ffmpeg -version
 
-# STEP 1 — Install Dependencies
+Install FFmpeg
+macOS:
+brew install ffmpeg
 
-## Install Node packages
-
-Server:
-
-```bash
+Windows:
+Download FFmpeg from:
+https://ffmpeg.org/download.html
+Running the Backend
+Install dependencies:
 cd server
 npm install
-```
 
-App:
-
-```bash
-cd app
-npm install
-```
-
----
-
-# STEP 2 — Install FFmpeg (REQUIRED FOR LIVE AUDIO)
-
-Mac:
-
-```bash
-brew install ffmpeg
-```
-
-Verify installation:
-
-```bash
-ffmpeg -version
-```
-
----
-
-# STEP 3 — Find YOUR IP Address
-
-On your laptop:
-
-```bash
+Find your local IP address:
+macOS:
 ifconfig
-```
 
-Look for:
+Windows:
+ipconfig
 
-```text
-inet 192.168.x.x
-```
-
-Example:
-
-```text
-192.168.12.163
-```
-
-This is YOUR IP address.
-
----
-
-# STEP 4 — Update the App (REQUIRED)
-
-Go to:
-
-```text
-/app/screens/AudioControlScreen.tsx
-```
-
-Find:
-
-```ts
-uri: "http://192.168.12.163:3000/audio";
-```
-
-Replace with YOUR IP:
-
-```ts
-uri: "http://192.168.x.x:3000/audio";
-```
-
-For live audio:
-
-```ts
-uri: "http://192.168.x.x:3000/audio-live";
-```
-
-If the IP is incorrect, audio will not work.
-
-Please keep a log of local IPs:
-
-```text
-Souzen: http://192.168.12.163:3000
-Fatima:
-Maryam:
-Ngozi:
-Avni:
-```
-
----
-
-# STEP 5 — Configure Microphone Device (LIVE AUDIO)
-
-Run:
-
-```bash
-ffmpeg -f avfoundation -list_devices true -i ""
-```
-
-Look under:
-
-```text
-AVFoundation audio devices:
-```
-
-Example:
-
-```text
-[1] MacBook Pro Microphone
-```
-
-In `server.js`, update:
-
-```js
-"-i", ":1",
-```
-
-Replace `1` with your microphone index if different.
-
----
-
-# STEP 6 — Start the Server
-
-```bash
+Start the server:
 cd server
 node server.js
-```
 
-Expected output:
+The server will run on:
+http://<YOUR_IP>:3000
 
-```text
-🎤 FFmpeg live MP3 stream started
-✅ Server running on port 3000
-```
+Microphone Configuration
+To identify microphone devices:
+macOS:
+ffmpeg -f avfoundation -list_devices true -i ""
 
----
+Windows:
+ffmpeg -list_devices true -f dshow -i dummy
 
-# STEP 7 — Run the App
+Update the microphone device in:
+server/server.js
 
-```bash
-cd app
-npx expo start
-```
+### Running the iOS Application
+Requirements:
+Xcode
+Apple ID
+iPhone or iOS Simulator
+Steps:
+Open the iOS project in Xcode.
+Select a simulator or connected iPhone.
+Update the backend IP address if necessary.
+Run the application.
+If running on a physical device, trust the developer profile under:
+Settings → General → VPN & Device Management
 
-Use LAN mode:
+### Running the Android Application
+Requirements:
+Android Studio
+Android SDK
 
-- press `shift + l`
-- OR select LAN manually
+Steps:
+Open the Android project in Android Studio.
+Allow Gradle Sync to complete.
+Launch an Android Virtual Device using Device Manager.
+Update the backend IP address if necessary.
+Click Run.
 
-Do NOT use Tunnel mode.
+Network Requirements
+The server and mobile device must be connected to the same WiFi network.
 
----
+Avoid:
+Mobile data
+VPNs
+Guest networks
 
-# STEP 8 — Same WiFi Network
+Testing
+Static audio:
+http://<YOUR_IP>:3000/audio
 
-Laptop and phone must both be on:
+Live microphone stream:
+http://<YOUR_IP>:3000/audio-live
 
-- same WiFi
-- not mobile data
-- not guest WiFi
-- not VPN
+### Known Limitations
+Live streaming currently uses HTTP-based audio streaming.
+Audio latency varies by platform.
+Mobile devices may buffer several seconds of audio before playback.
+The backend currently runs locally for demonstration purposes.
 
----
+### Future Work
+WebRTC-based low-latency streaming
+Cloud-hosted backend deployment
+Improved Bluetooth hearing aid support
+Audio compression and latency optimization
 
-# STEP 9 — Test in Browser BEFORE App
-
-## Stable file playback
-
-Open on phone:
-
-```text
-http://YOUR_IP:3000/audio
-```
-
-## Live microphone stream
-
-Open on phone:
-
-```text
-http://YOUR_IP:3000/audio-live
-```
-
-Example:
-
-```text
-http://192.168.12.163:3000/audio-live
-```
-
----
-
-# STEP 10 — Use the App
-
-1. Open app on phone
-2. Navigate to Audio Control screen
-3. Press Play
-4. Audio should begin streaming
-
----
-
-# TROUBLESHOOTING
-
-## No audio
-
-- Check IP address
-- Verify server is running
-- Ensure same WiFi
-
-## Live audio has no sound
-
-- Check microphone permissions:
-  - System Settings → Privacy & Security → Microphone
-
-- Verify correct FFmpeg mic index in `server.js`
-
-## iPhone buffering or overlapping audio
-
-- Close all previous `/audio-live` tabs
-- Reopen only one stream
-- Restart Safari if needed
-
-## Works on laptop but not phone
-
-- Wrong IP
-- Expo running in Tunnel mode
-- Firewall blocking port 3000
-
----
-
-# CURRENT SYSTEM
-
-```text
-/audio       → stable MP3 file playback
-/audio-live  → live microphone MP3 stream
-```
-
----
-
-# CURRENT LIMITATIONS
-
-- Live stream may still have slight delay
-- Safari/iPhone buffering behavior can vary
-- WebRTC would be needed for true low-latency production streaming
-
----
-
-# FUTURE WORK
-
-- WebRTC real-time streaming
-- Bluetooth hearing aid routing
-- Lower latency audio pipeline
-- Audio compression optimization
-
----
-
-# OWNER
-
-Souzen — Networking & Streaming
+### Team
+Informatics 117 : Say What
+Souzen Khan - Network & Streaming Developer
+Fatima - Android Developer
+Maryam - iOS Developer
+Ngozi - UI/UX Designer
+Avni - Design & React Prototype
