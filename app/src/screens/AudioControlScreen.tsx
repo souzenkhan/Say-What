@@ -6,7 +6,7 @@ import { useRef, useEffect, useState } from "react";
 import { useConnection } from "../context/ConnectionContext";
 
 // Replace with your local IP
-const BASE_URL = "http://192.168.12.163:3000";
+const BASE_URL = "http://192.168.1.107:3000";
 
 // LIVE STREAM URL
 const AUDIO_URL = `${BASE_URL}/audio-live`;
